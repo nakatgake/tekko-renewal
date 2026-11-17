@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>サイト管理担当者の操作イメージ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@500;700&family=Noto+Sans+JP:wght@400;500;700&display=swap">
+<style>
+/* 左に担当者の作業、右に実際と同じ画面。作業を選ぶと右の画面が切り替わる */
+:root {
+  --bg: #eef2f6; --paper: #ffffff; --ink: #14273a; --sub: #55677a; --line: #d3dce6;
+  --steel: #1f4e79; --deep: #0f2740; --primer: #b0432c; --mist: #e3eaf2;
+  --f-head: "Zen Kaku Gothic New", "Noto Sans JP", "Yu Gothic", Meiryo, sans-serif;
+  --f-body: "Noto Sans JP", "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0d1823; --paper: #15222f; --ink: #e4ebf2; --sub: #9fb0c2; --line: #2a3a4b;
+  --steel: #7fb0dd; --deep: #081119; --primer: #e0795f; --mist: #1c2c3c; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #0d1823; --paper: #15222f; --ink: #e4ebf2; --sub: #9fb0c2; --line: #2a3a4b;
+  --steel: #7fb0dd; --deep: #081119; --primer: #e0795f; --mist: #1c2c3c; color-scheme: dark }
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.75 var(--f-body); overflow-wrap: anywhere; }
+.top { background: #0f2740; color: #fff; border-bottom: 4px solid #b0432c; }
+.top .in { padding-block: 18px 20px; }
+.in { max-width: 1440px; margin-inline: auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.eyebrow { font-size: 12px; letter-spacing: .12em; color: #b9c9d8; margin: 0; }
+h1 { font-family: var(--f-head); font-size: clamp(22px, 3vw, 30px); line-height: 1.35; margin: 2px 0 8px; text-wrap: balance; }
+.lead { margin: 0; max-width: 62em; color: #dbe5ee; font-size: 14px; }
+.who { display: flex; flex-wrap: wrap; gap: 8px 22px; margin: 12px 0 0; padding: 0; list-style: none; font-size: 13px; color: #dbe5ee; }
+.who b { color: #fff; font-weight: 700; margin-right: 6px; }
+.layout { display: grid; grid-template-columns: minmax(300px, 400px) minmax(0, 1fr); gap: 20px; padding-block: 20px 28px; align-items: start; }
+.tasks { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; min-width: 0; }
+.group { font-family: var(--f-head); font-size: 13px; letter-spacing: .08em; color: var(--sub); margin: 10px 0 0; }
+.task { background: var(--paper); border: 1px solid var(--line); border-radius: 4px; }
+.task > button { all: unset; box-sizing: border-box; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 2px 12px; width: 100%; padding: 12px 14px; cursor: pointer; }
+.task > button:focus-visible { outline: 3px solid var(--primer); outline-offset: 2px; }
+.task .freq { grid-row: span 2; align-self: start; font-size: 11px; font-weight: 700; line-height: 1; padding: 6px 7px; border-radius: 2px; background: var(--mist); color: var(--steel); white-space: nowrap; margin-top: 3px; }
+.task .t { font-weight: 700; font-size: 15px; line-height: 1.5; }
+.task .s { font-size: 13px; color: var(--sub); line-height: 1.55; }
+.task ol { display: none; margin: 0; padding: 0 14px 14px 46px; font-size: 14px; }
+.task ol li { margin-top: 4px; }
+.task ol li::marker { color: var(--primer); font-weight: 700; }
+.task ol button { font: 500 12px/1 var(--f-body); color: var(--steel); background: none; border: 1px solid var(--steel); border-radius: 2px; padding: 4px 7px; margin-left: 6px; cursor: pointer; vertical-align: 1px; }
+.task ol button:hover { background: var(--steel); color: var(--paper); }
+.task.on { border-color: var(--steel); box-shadow: inset 4px 0 0 var(--steel); }
+.task.on ol { display: block; }
+.task.on .freq { background: var(--steel); color: var(--paper); }
+.screen { position: sticky; top: max(12px, env(safe-area-inset-top, 0px)); min-width: 0; background: var(--paper); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; box-shadow: 0 8px 24px rgba(15, 39, 64, .12); }
+.chrome { display: flex; align-items: center; gap: 10px; padding: 8px 12px; background: var(--mist); border-bottom: 1px solid var(--line); }
+.dots { display: flex; gap: 5px; flex: none; }
+.dots i { width: 10px; height: 10px; border-radius: 50%; background: var(--line); }
+.addr { flex: 1; min-width: 0; font: 12px/1.6 var(--f-body); color: var(--sub); background: var(--paper); border: 1px solid var(--line); border-radius: 999px; padding: 2px 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.chrome button { font: 700 12px/1 var(--f-body); color: var(--steel); background: var(--paper); border: 1px solid var(--line); border-radius: 3px; padding: 6px 9px; cursor: pointer; white-space: nowrap; }
+.jump { display: flex; flex-wrap: wrap; gap: 6px 18px; padding: 9px 12px; border-bottom: 1px solid var(--line); background: var(--paper); }
+.jg { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; min-width: 0; }
+.jg span { font-size: 11px; font-weight: 700; letter-spacing: .06em; color: var(--sub); margin-right: 2px; }
+.jump button { font: 500 12px/1 var(--f-body); color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 999px; padding: 6px 10px; cursor: pointer; }
+.jump button:hover { border-color: var(--steel); color: var(--steel); }
+.jump button[aria-current="page"] { background: var(--steel); border-color: var(--steel); color: var(--paper); font-weight: 700; }
+.jump button:focus-visible, .chrome button:focus-visible { outline: 3px solid var(--primer); outline-offset: 2px; }
+iframe { display: block; width: 100%; height: calc(100vh - 170px); min-height: 520px; border: 0; background: #f1f4f8; }
+.cap { margin: 0; padding: 9px 14px; font-size: 13px; color: var(--sub); border-top: 1px solid var(--line); background: var(--paper); }
+.cap b { color: var(--ink); }
+.notes { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; padding-block: 0 36px; }
+.note { background: var(--paper); border: 1px solid var(--line); border-radius: 4px; padding: 14px 16px; }
+.note h2 { font-family: var(--f-head); font-size: 15px; margin: 0 0 4px; }
+.note p { margin: 0; font-size: 13.5px; color: var(--sub); }
+.notes-h { font-family: var(--f-head); font-size: 18px; margin: 4px 0 12px; }
+@media (max-width: 900px) {
+  .layout { grid-template-columns: minmax(0, 1fr); }
+  .who li { min-width: 0; }
+  .screen { position: static; }
+  iframe { height: 72vh; min-height: 460px; }
+}
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+</style>
+
+<header class="top"><div class="in">
+  <p class="eyebrow">秋田県鐵構工業協同組合　新ホームページ</p>
+  <h1>サイト管理担当者の操作イメージ</h1>
+  <p class="lead">事務局でホームページを管理する方が、ふだん使う画面と手順です。左の作業を選ぶと、右に実際と同じ画面が出ます。右の画面の中のボタンも押せるので、本番と同じように画面を進められます。</p>
+  <ul class="who">
+    <li><b>使う場所</b>パソコンのブラウザ（ホームページの住所の後ろに /admin/）</li>
+    <li><b>必要なもの</b>管理用パスワード1つ</li>
+    <li><b>専門知識</b>不要（ファイルの編集やサーバーの操作はしません）</li>
+  </ul>
+</div></header>
+
+<main class="in layout">
+  <section class="tasks" aria-label="担当者の作業">
+    <p class="group">名簿の管理</p>
+    <div class="task" data-page="p01">
+      <button type="button"><span class="freq">毎回</span><span class="t">管理画面に入る</span><span class="s">パスワードを入れてログインします。</span></button>
+      <ol>
+        <li>ホームページの住所の後ろに「/admin/」を付けて開く<button type="button" data-go="p01">画面</button></li>
+        <li>管理用パスワードを入れて「ログイン」</li>
+        <li>名簿一覧が出たら準備完了<button type="button" data-go="p02">画面</button></li>
+      </ol>
+    </div>
+    <div class="task" data-page="p03">
+      <button type="button"><span class="freq">年に数回</span><span class="t">会社の情報を直す</span><span class="s">代表者・住所・電話番号が変わったとき。</span></button>
+      <ol>
+        <li>名簿一覧で、その会社の「修正」を押す<button type="button" data-go="p02">画面</button></li>
+        <li>変わった欄だけ書き換える<button type="button" data-go="p03">画面</button></li>
+        <li>「修正を保存する」を押すと、公開ページにすぐ反映</li>
+      </ol>
+    </div>
+    <div class="task" data-page="p04">
+      <button type="button"><span class="freq">加入時</span><span class="t">新しい組合員を追加する</span><span class="s">新しく加入した会社を名簿に載せます。</span></button>
+      <ol>
+        <li>名簿一覧の右上「＋ 組合員を追加」<button type="button" data-go="p02">画面</button></li>
+        <li>区分・会社名・所在地・電話を入れる（必須はこの4つ）<button type="button" data-go="p04">画面</button></li>
+        <li>「追加する」を押す。区分順に自動で並びます</li>
+      </ol>
+    </div>
+    <div class="task" data-page="p05">
+      <button type="button"><span class="freq">随時</span><span class="t">会社の紹介ページを更新する</span><span class="s">写真の差し替え、資格者数や実績の追加など。</span></button>
+      <ol>
+        <li>名簿一覧の「紹介ページ」列で「編集」を押す<button type="button" data-go="p02">画面</button></li>
+        <li>「組合員の修正」画面の上のボタンからも開けます<button type="button" data-go="p03">画面</button></li>
+        <li>外観写真・会社概要の項目・写真を直す。並び順は▲▼で入れ替え<button type="button" data-go="p05">画面</button></li>
+        <li>いちばん下の「紹介ページを保存する」を押す</li>
+      </ol>
+    </div>
+    <div class="task" data-page="p06">
+      <button type="button"><span class="freq">脱退時</span><span class="t">組合員を名簿から外す</span><span class="s">脱退した会社を削除します。</span></button>
+      <ol>
+        <li>名簿一覧で、その会社の「削除」を押す<button type="button" data-go="p02">画面</button></li>
+        <li>確認画面で会社名を確かめて「削除する」<button type="button" data-go="p06">画面</button></li>
+      </ol>
+    </div>
+
+    <p class="group">組合の基本情報</p>
+    <div class="task" data-page="p14">
+      <button type="button"><span class="freq">役員改選時</span><span class="t">代表者・出資金・連絡先を直す</span><span class="s">組合の代表者や出資金額が変わったとき。</span></button>
+      <ol>
+        <li>管理画面の上のメニュー「組合の基本情報」<button type="button" data-go="p14">画面</button></li>
+        <li>変わった欄だけ書き換える。出資金は円で入力（例：21600000）</li>
+        <li>「保存する」を押すと、組合の概要・お問い合わせ・上の数字の欄にすぐ反映</li>
+      </ol>
+    </div>
+
+    <p class="group">お知らせ</p>
+    <div class="task" data-page="p13">
+      <button type="button"><span class="freq">随時</span><span class="t">お知らせを載せる</span><span class="s">行事の案内や組合からの連絡を、トップページのお知らせ欄に出します。</span></button>
+      <ol>
+        <li>管理画面の上のメニュー「お知らせ」<button type="button" data-go="p12">画面</button></li>
+        <li>「＋ お知らせを書く」で日付・分類・見出しを入れる。案内のPDFも添付できる<button type="button" data-go="p13">画面</button></li>
+        <li>「掲載する」を押すと、トップページにすぐ出る。直すときは一覧の「修正」</li>
+      </ol>
+    </div>
+
+    <p class="group">組合員専用ページ（事務局の作業）</p>
+    <div class="task" data-page="p17">
+      <button type="button"><span class="freq">公開時・加入時</span><span class="t">各社のログインIDを発行する</span><span class="s">会社ごとにログインIDとパスワードを作って、知らせます。</span></button>
+      <ol>
+        <li>管理画面の上のメニュー「組合員専用ページの管理」<button type="button" data-go="p07">画面</button></li>
+        <li>上のメニュー「ログインIDの管理」で、会社の「発行する」<button type="button" data-go="p16">画面</button></li>
+        <li>ログインID（会社名のローマ字など）を入れて「発行する」<button type="button" data-go="p17">画面</button></li>
+        <li>表示されたパスワードを控えて、会社へ知らせる（あとから表示はできません）<button type="button" data-go="p18">画面</button></li>
+      </ol>
+    </div>
+    <div class="task" data-page="p18">
+      <button type="button"><span class="freq">随時</span><span class="t">パスワードを忘れたと言われたら</span><span class="s">パスワードを作り直して、その会社へ知らせます。</span></button>
+      <ol>
+        <li>「ログインIDの管理」で、その会社の「確認・変更」<button type="button" data-go="p16">画面</button></li>
+        <li>「パスワードを作り直す」を押し、表示された新しいパスワードを知らせる<button type="button" data-go="p18">画面</button></li>
+        <li>一時的に使えなくしたいときは、同じ画面の「停止する」</li>
+      </ol>
+    </div>
+    <div class="task" data-page="p15">
+      <button type="button"><span class="freq">行事が決まったら</span><span class="t">予定を登録する</span><span class="s">総会・講習会・見学会などを、組合員のカレンダーに載せます。</span></button>
+      <ol>
+        <li>専用ページのトップの「＋ 予定を登録」<button type="button" data-go="p07">画面</button></li>
+        <li>日にち・行事名・時間・場所を入れる。案内のPDFも付けられる<button type="button" data-go="p15">画面</button></li>
+        <li>「登録する」を押すと、組合員のカレンダーとトップにすぐ出る<button type="button" data-go="p19">画面</button></li>
+      </ol>
+    </div>
+    <div class="task" data-page="p08">
+      <button type="button"><span class="freq">会議のたび</span><span class="t">資料を載せる</span><span class="s">総会資料・お役立ち情報・様式などのファイルを登録します。</span></button>
+      <ol>
+        <li>専用ページのトップの「＋ 資料を登録」<button type="button" data-go="p07">画面</button></li>
+        <li>ファイルを選び、分類と名前を付けて「登録する」<button type="button" data-go="p08">画面</button></li>
+        <li>組合員がすぐダウンロードでき、コメントも書き込める<button type="button" data-go="p21">画面</button></li>
+      </ol>
+    </div>
+
+    <p class="group">組合員から見た専用ページ（参考）</p>
+    <div class="task" data-page="p11">
+      <button type="button"><span class="freq">参考</span><span class="t">ログインして、トップを見る</span><span class="s">各社のログインIDとパスワードで入ります。</span></button>
+      <ol>
+        <li>ホームページの「組合員専用ページ」ボタンから入る<button type="button" data-go="p10">画面</button></li>
+        <li>トップに「これからの予定」と「新着」が並ぶ<button type="button" data-go="p11">画面</button></li>
+      </ol>
+    </div>
+    <div class="task" data-page="p19">
+      <button type="button"><span class="freq">参考</span><span class="t">予定を見る</span><span class="s">月のカレンダーと一覧で行事を確かめます。</span></button>
+      <ol>
+        <li>上のメニュー「予定」でカレンダー<button type="button" data-go="p19">画面</button></li>
+        <li>行事名を押すと、時間・場所・案内の資料<button type="button" data-go="p20">画面</button></li>
+      </ol>
+    </div>
+    <div class="task" data-page="p22">
+      <button type="button"><span class="freq">参考</span><span class="t">資料をダウンロード・コメントする</span><span class="s">質問や感想を、資料ごとに書き込めます。</span></button>
+      <ol>
+        <li>上のメニュー「資料」で一覧<button type="button" data-go="p21">画面</button></li>
+        <li>資料の名前を押すと、説明・ダウンロード・コメント<button type="button" data-go="p22">画面</button></li>
+      </ol>
+    </div>
+    <div class="task" data-page="p24">
+      <button type="button"><span class="freq">参考</span><span class="t">掲示板で情報交換する</span><span class="s">組合員が話題を立て、ほかの会社がコメントします。</span></button>
+      <ol>
+        <li>上のメニュー「掲示板」で話題の一覧<button type="button" data-go="p23">画面</button></li>
+        <li>「＋ 新しい話題を立てる」で題名と本文を書く<button type="button" data-go="p25">画面</button></li>
+        <li>話題を開くと、コメントのやりとりが見られる<button type="button" data-go="p24">画面</button></li>
+      </ol>
+    </div>
+    <div class="task" data-page="p09">
+      <button type="button"><span class="freq">参考</span><span class="t">自社のパスワードを変える</span><span class="s">各社が、ログイン後に自分で変えられます。</span></button>
+      <ol>
+        <li>右上の「パスワード変更」<button type="button" data-go="p09">画面</button></li>
+        <li>今のパスワードと新しいパスワードを入れて「変更する」</li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="screen" aria-label="実際と同じ画面">
+    <div class="chrome"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="addr" id="addr">https://（組合のホームページ）/admin/</span><button type="button" id="back">← 戻る</button><button type="button" id="home">最初の画面へ</button></div>
+    <nav class="jump" aria-label="画面を選ぶ">
+      <div class="jg"><span>名簿</span><button type="button" data-jump="p01">ログイン</button><button type="button" data-jump="p02">名簿一覧</button><button type="button" data-jump="p03">会社の修正</button><button type="button" data-jump="p04">組合員の追加</button><button type="button" data-jump="p05">紹介ページ</button><button type="button" data-jump="p06">削除の確認</button></div>
+      <div class="jg"><span>組合の基本情報・お知らせ</span><button type="button" data-jump="p14">組合の基本情報</button><button type="button" data-jump="p12">お知らせの一覧</button><button type="button" data-jump="p13">お知らせを書く</button></div>
+      <div class="jg"><span>専用ページ（事務局）</span><button type="button" data-jump="p07">トップ</button><button type="button" data-jump="p15">予定の登録</button><button type="button" data-jump="p08">資料の登録</button><button type="button" data-jump="p16">ログインIDの一覧</button><button type="button" data-jump="p17">IDの発行</button><button type="button" data-jump="p18">発行した後</button></div>
+      <div class="jg"><span>専用ページ（組合員から見た画面）</span><button type="button" data-jump="p10">ログイン</button><button type="button" data-jump="p11">トップ</button><button type="button" data-jump="p19">予定</button><button type="button" data-jump="p20">予定の詳細</button><button type="button" data-jump="p21">資料</button><button type="button" data-jump="p22">資料とコメント</button><button type="button" data-jump="p23">掲示板</button><button type="button" data-jump="p24">話題とコメント</button><button type="button" data-jump="p25">話題を立てる</button><button type="button" data-jump="p09">パスワード変更</button></div>
+    </nav>
+    <iframe id="frame" title="管理画面の見本" src="screens/p01.html"></iframe>
+    <p class="cap" id="cap"><b>管理画面に入る</b>　パスワードを入れて「ログイン」を押すと、名簿一覧に進みます。</p>
+  </section>
+</main>
+
+<section class="in">
+  <h2 class="notes-h">知っておくと安心なこと</h2>
+  <div class="notes">
+    <div class="note"><h2>間違えても戻せる</h2><p>保存するたびに、直前の名簿が自動で控えとして残ります（最新30回分）。誤って消した場合は、サイトを作った担当者に連絡すれば元に戻せます。</p></div>
+    <div class="note"><h2>パスワードは2種類</h2><p>管理用（担当者だけが知る）と、各社のログイン用は別物です。各社のパスワードでは管理画面に入れません。</p></div>
+    <div class="note"><h2>書き込みは事務局が消せる</h2><p>掲示板やコメントに不適切な書き込みがあったときは、管理画面にログインした状態で専用ページを開くと、どの書き込みでも「削除」できます。</p></div>
+    <div class="note"><h2>自動でログアウト</h2><p>60分操作しないと自動でログアウトします。共用のパソコンでも、使い終わったら右上の「ログアウト」を押してください。</p></div>
+    <div class="note"><h2>入力の間違いは画面が教える</h2><p>電話番号の書き方が違う、必須の欄が空、といった場合は赤い文字で知らせ、保存しません。半角・全角も自動でそろえます。</p></div>
+    <div class="note"><h2>続けて失敗すると止まる</h2><p>パスワードを5回続けて間違えると、15分間ログインを受け付けません。時間をおいてやり直してください。</p></div>
+  </div>
+</section>
+
+<script>
+(() => {
+  const frame = document.getElementById("frame"), addr = document.getElementById("addr"), cap = document.getElementById("cap");
+  // 画面ごとの住所欄の表示と、下の説明
+  const INFO = {
+    p01: ["/admin/", "管理画面に入る", "パスワードを入れて「ログイン」を押すと、名簿一覧に進みます。"],
+    p02: ["/admin/", "名簿一覧", "全26社が公開ページと同じ順で並びます。各社の「修正」「削除」、紹介ページの「編集」はここから。"],
+    p03: ["/admin/?a=edit", "組合員の修正", "変わった欄だけ直して「修正を保存する」。写真や会社概要は、上の「紹介ページ（写真・会社概要）の編集へ」から。"],
+    p04: ["/admin/?a=new", "組合員の追加", "赤い「必須」の欄だけ入れれば追加できます。青年部会の役職を選ぶと、青年部会の名簿にも載ります。"],
+    p05: ["/admin/?a=profile", "紹介ページの編集", "下へスクロールすると、会社概要の項目と写真の欄があります。並び順は▲▼で入れ替えます。保存ボタンはいつも画面の下にあります。"],
+    p06: ["/admin/?a=delete", "組合員の削除", "削除する前に、必ずこの確認画面が出ます。"],
+    p12: ["/admin/?a=news", "お知らせの一覧", "日付の新しい順に並びます。トップページには最新の5件が出て、それより古いものは「過去のお知らせも見る」で表示されます。"],
+    p13: ["/admin/?a=newsedit", "お知らせを書く", "日付・分類・見出しを入れて「掲載する」。詳しい内容、リンク先、案内のPDFの添付は必要なときだけ。"],
+    p14: ["/admin/?a=union", "組合の基本情報", "代表者・出資金額・連絡先を直せます。出資金は円で入れると、上の数字の欄に「○○万円」と自動で出ます。組合員数と大臣認定工場の数は名簿から自動で数えます。"],
+    p07: ["/members/", "専用ページのトップ（事務局の見え方）", "管理画面にログインしていると「組合事務局」として入り、予定・資料の登録とログインIDの管理ができます。"],
+    p15: ["/members/?a=eventedit", "予定の登録", "日にちと行事名だけで登録できます。2日以上の行事は「終わりの日」も入れます。案内のPDFも付けられます。"],
+    p08: ["/members/?a=new", "資料の登録", "ファイルを選び、分類を選ぶか新しく作って「登録する」。PDF・Word・Excelなどが登録できます。"],
+    p16: ["/members/?a=accounts", "ログインIDの一覧", "名簿の会社が並び、発行済みか・最後にいつログインしたかが分かります。名簿から削除した会社は自動でログインできなくなります。"],
+    p17: ["/members/?a=account", "ログインIDの発行", "ログインIDを入れて「発行する」。パスワードは自動で作られます。"],
+    p18: ["/members/?a=account", "発行した後の画面", "パスワードはこのときだけ表示されます。控えて会社へ知らせてください。パスワードの作り直しや、利用の停止もこの画面からできます。"],
+    p10: ["/members/", "組合員のログイン画面", "各社のログインIDとパスワードで入ります。"],
+    p11: ["/members/", "組合員から見たトップ", "ログインした会社名が出ます。「これからの予定」と、30日以内の「新着」（予定・資料・話題・コメント）が並びます。"],
+    p19: ["/members/?a=cal", "予定（カレンダー）", "月のカレンダーと、その月の予定の一覧です。行事名を押すと詳しい内容が見られます。"],
+    p20: ["/members/?a=event", "予定の詳細", "時間・場所・連絡事項と、案内の資料のダウンロード。"],
+    p21: ["/members/?a=docs", "資料の一覧", "分類ごとに並びます。コメントが付いた資料には件数が出ます。"],
+    p22: ["/members/?a=doc", "資料とコメント", "書き込みには会社名が自動で付きます。事務局の書き込みは「組合事務局」と出ます。自分の書き込みは自分で直したり消したりできます。"],
+    p23: ["/members/?a=board", "掲示板", "新しく動きのあった話題が上に並びます。"],
+    p24: ["/members/?a=thread", "話題とコメント", "話題を立てた会社は、話題を直したり消したりできます。事務局はどの書き込みでも消せます。"],
+    p25: ["/members/?a=threadedit", "話題を立てる", "題名と本文を書いて「話題を立てる」。会社名は自動で表示されます。"],
+    p09: ["/members/?a=mypw", "パスワード変更（組合員）", "各社が自分でパスワードを変えられます。変えた後は、社内で使う方にも知らせてもらいます。"],
+  };
+  const tasks = [...document.querySelectorAll(".task")];
+  // 作業ごとに、その手順で出てくる画面の一覧
+  const pagesOf = t => new Set([t.dataset.page, ...[...t.querySelectorAll("[data-go]")].map(b => b.dataset.go)]);
+  // 画面ごとに、いちばん関係の深い作業（その画面を主に扱う作業）
+  const mainTask = id => tasks.find(t => t.dataset.page === id) || tasks.find(t => pagesOf(t).has(id)) || null;
+  let current = null;
+  const select = task => { current = task; tasks.forEach(t => t.classList.toggle("on", t === task)); };
+  const show = id => { if (INFO[id]) frame.src = "screens/" + id + ".html"; };
+  const label = id => {
+    const i = INFO[id]; if (!i) return;
+    addr.textContent = "https://（組合のホームページ）" + i[0];
+    cap.innerHTML = "<b>" + i[1] + "</b>　" + i[2];
+    document.querySelectorAll("[data-jump]").forEach(b => b.dataset.jump === id ? b.setAttribute("aria-current", "page") : b.removeAttribute("aria-current"));
+    // 左の作業も、いまの画面に合わせる（選んでいる作業の画面なら、そのまま）
+    if (!current || !pagesOf(current).has(id)) { const t = mainTask(id); if (t) select(t); }
+  };
+  const toScreen = () => { if (matchMedia("(max-width: 900px)").matches) document.querySelector(".screen").scrollIntoView({ block: "start" }); };
+  tasks.forEach(t => {
+    t.querySelector(":scope > button").addEventListener("click", () => { select(t); show(t.dataset.page); toScreen(); });
+  });
+  document.querySelectorAll("[data-go]").forEach(b => b.addEventListener("click", e => { e.stopPropagation(); select(b.closest(".task")); show(b.dataset.go); toScreen(); }));
+  document.querySelectorAll("[data-jump]").forEach(b => b.addEventListener("click", () => show(b.dataset.jump)));
+  // 右の画面の中でボタンを押して進んだときも、住所欄・説明・左の作業・画面の選択を合わせる
+  frame.addEventListener("load", () => {
+    try { const m = frame.contentWindow.location.pathname.match(/(p\d\d)\.html$/); if (m) label(m[1]); } catch (e) {}
+  });
+  document.getElementById("back").addEventListener("click", () => { try { frame.contentWindow.history.back(); } catch (e) {} });
+  document.getElementById("home").addEventListener("click", () => { select(tasks[0]); show("p01"); });
+  select(tasks[0]);
+  label("p01");
+})();
+</script>
+
+</html>

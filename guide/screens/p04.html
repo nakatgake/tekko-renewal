@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>組合員の追加｜名簿管理</title>
+<style>
+:root { --ink:#14273a; --steel:#1f4e79; --deep:#0f2740; --line:#d5dde6; --mist:#f1f4f8; --paper:#fff; --sub:#55677a; --primer:#b0432c; --ok:#2c7566; }
+* { box-sizing: border-box; }
+body { margin:0; background:var(--mist); color:var(--ink); font:16px/1.7 "Noto Sans JP","Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif; }
+a { color:var(--steel); }
+.bar { background:var(--deep); color:#fff; }
+.bar .in { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px 20px; padding-block:14px; }
+.bar strong { font-size:17px; letter-spacing:.04em; }
+.bar small { display:block; font-size:12px; color:#b9c9d8; }
+.bar nav { display:flex; flex-wrap:wrap; align-items:center; gap:6px 18px; font-size:14px; }
+.bar a { color:#fff; }
+.in { max-width:1180px; margin-inline:auto; padding-inline:20px; }
+main.in { padding-block:28px 60px; }
+h1 { font-size:24px; margin:0 0 18px; line-height:1.4; }
+h2 { font-size:18px; margin:0 0 12px; }
+.card { background:var(--paper); border:1px solid var(--line); padding:22px; margin-bottom:20px; }
+.narrow { max-width:520px; margin-inline:auto; }
+.msg { padding:12px 16px; margin-bottom:16px; border-left:5px solid var(--ok); background:#e9f4f1; }
+.msg.err { border-color:var(--primer); background:#fbece8; }
+.btn { display:inline-block; font-family:inherit; font-weight:700; font-size:15px; line-height:1; padding:12px 18px; border:1px solid var(--steel); background:var(--steel); color:#fff; border-radius:4px; cursor:pointer; text-decoration:none; }
+.btn:hover { background:var(--deep); }
+.btn.line { background:#fff; color:var(--steel); }
+.btn.line:hover { background:var(--mist); }
+.btn.danger { background:var(--primer); border-color:var(--primer); }
+.btn.sm { font-size:13px; padding:8px 10px; font-weight:500; }
+.btn.link { background:none; border:0; color:#fff; padding:0; text-decoration:underline; font-weight:400; font-size:14px; }
+.btn[disabled] { opacity:.3; cursor:default; }
+:focus-visible { outline:3px solid var(--primer); outline-offset:2px; }
+.toolbar { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px; }
+.counts { color:var(--sub); font-size:14px; }
+.tw { overflow-x:auto; background:var(--paper); border:1px solid var(--line); border-top:3px solid var(--steel); }
+table { border-collapse:collapse; width:100%; min-width:900px; }
+th, td { text-align:left; padding:10px 12px; border-bottom:1px solid var(--line); font-size:14px; vertical-align:middle; }
+thead th { background:var(--mist); font-size:12px; color:var(--sub); font-weight:500; white-space:nowrap; }
+td.name { font-weight:700; font-size:15px; }
+td.name small { display:block; font-weight:400; color:var(--sub); font-size:12px; }
+td.num { white-space:nowrap; font-variant-numeric:tabular-nums; }
+.g { display:inline-block; min-width:30px; padding:2px 6px; text-align:center; font-weight:700; color:#fff; background:var(--steel); border-radius:2px; font-size:13px; }
+.g.N, .g.A { background:#fff; color:var(--sub); border:1px solid var(--line); }
+.ops { display:flex; gap:6px; align-items:center; white-space:nowrap; }
+.ops form { margin:0; }
+.grid { display:grid; grid-template-columns:1fr 1fr; gap:18px 20px; }
+.grid .full { grid-column:1 / -1; }
+label { display:block; font-weight:700; font-size:14px; margin-bottom:6px; }
+label .opt { font-weight:400; color:var(--sub); font-size:12px; margin-left:6px; }
+label .req { font-weight:700; color:var(--primer); font-size:12px; margin-left:6px; }
+input[type=text], input[type=password], input[type=url], input[type=tel], select { width:100%; font:16px/1.4 inherit; padding:11px 12px; border:1px solid #aab7c4; border-radius:4px; background:#fff; color:var(--ink); }
+.hint { font-size:12px; color:var(--sub); margin-top:4px; }
+.ferr { font-size:13px; color:var(--primer); font-weight:700; margin-top:4px; }
+.has-err input, .has-err select { border-color:var(--primer); }
+.actions { display:flex; flex-wrap:wrap; gap:12px; margin-top:24px; }
+.inline { display:flex; flex-wrap:wrap; gap:10px; align-items:end; }
+.inline > div { flex:1 1 220px; }
+dl.confirm { display:grid; grid-template-columns:7em 1fr; gap:6px 14px; margin:14px 0 0; }
+dl.confirm dt { color:var(--sub); font-size:14px; }
+dl.confirm dd { margin:0; }
+textarea { width:100%; font:15px/1.6 inherit; padding:10px 12px; border:1px solid #aab7c4; border-radius:4px; background:#fff; color:var(--ink); resize:vertical; }
+input[type=number] { width:100%; font:16px/1.4 inherit; padding:11px 8px; border:1px solid #aab7c4; border-radius:4px; }
+input[type=file] { font:14px/1.4 inherit; max-width:100%; }
+.mv { display:flex; flex-wrap:wrap; align-items:center; gap:4px; align-self:end; }
+.mvl { width:100%; font-size:12px; color:var(--sub); margin-bottom:3px; }
+.mv .btn.sm { padding:8px 11px; }
+.prow { display:grid; grid-template-columns:92px 1fr 190px; gap:8px 12px; padding:14px 0; border-top:1px solid var(--line); }
+.prow .wide { grid-column:1 / -1; }
+.prow label, .pphoto label { font-size:12px; font-weight:500; color:var(--sub); margin-bottom:3px; }
+.prow.blank { background:var(--mist); margin-inline:-22px; padding-inline:22px; }
+.pphoto { display:grid; grid-template-columns:150px 92px 1fr auto; gap:8px 14px; align-items:end; padding:12px 0; border-top:1px solid var(--line); }
+.pphoto img, .mainphoto img { display:block; width:150px; height:112px; object-fit:cover; border:1px solid var(--line); background:var(--mist); }
+.mainphoto { display:flex; flex-wrap:wrap; gap:16px 24px; align-items:flex-start; }
+.check { display:flex; align-items:center; gap:6px; font-size:14px; font-weight:500; white-space:nowrap; margin:0 0 10px; }
+.check input { width:18px; height:18px; }
+.stick { position:sticky; bottom:0; background:var(--paper); border-top:2px solid var(--steel); padding:14px 22px; margin:0 -1px; display:flex; flex-wrap:wrap; gap:12px; align-items:center; }
+.note { font-size:13px; color:var(--sub); margin:0 0 6px; }
+.tag { display:inline-block; font-size:12px; color:var(--sub); white-space:nowrap; }
+@media (max-width:640px) { .grid { grid-template-columns:1fr; } .prow { grid-template-columns:92px 1fr; } .prow .kind { grid-column:1 / -1; } .pphoto { grid-template-columns:110px 1fr; } .pphoto img { width:110px; height:82px; } .pphoto .cap, .pphoto .del { grid-column:1 / -1; } }
+</style>
+</head>
+<body>
+<header class="bar"><div class="in">
+  <div><strong>組合員名簿 管理画面</strong><small>秋田県鐵構工業協同組合</small></div>
+    <nav>
+    <a href="p02.html">名簿一覧</a>
+    <a href="p12.html">お知らせ</a>
+    <a href="p14.html">組合の基本情報</a>
+    <a href="p07.html">組合員専用ページの管理</a>
+    <a href="#">公開ページを見る</a>
+    <a href="#">パスワード変更</a>
+    <form method="post" action="?"><input type="hidden" name="csrf" value="bef2edb65751aeb4e6680b18dfe3d61af8365e80131819c7ed2ab57b355da903"><input type="hidden" name="do" value="logout"><button class="btn link" type="submit">ログアウト</button></form>
+  </nav>
+  </div></header>
+<main class="in">
+<h1>組合員の追加</h1><p class="counts">写真や会社概要は、追加したあと名簿一覧の「紹介ページ」列から登録できます。</p><form class="card" method="post" action="?" novalidate><input type="hidden" name="csrf" value="bef2edb65751aeb4e6680b18dfe3d61af8365e80131819c7ed2ab57b355da903"><input type="hidden" name="do" value="save"><input type="hidden" name="id" value=""><div class="grid"><div class=""><label for="f-grade">区分<span class="req">必須</span></label><select id="f-grade" name="grade"><option value="">選んでください</option><option value="S">Sグレード</option><option value="H">Hグレード</option><option value="M">Mグレード</option><option value="R">Rグレード</option><option value="J">Jグレード</option><option value="N">認定区分なし</option><option value="A">準組合員</option></select><div class="hint">大臣認定のグレード。認定がない場合は「認定区分なし」。</div></div><div class=""><label for="f-seinen">青年部会<span class="opt">任意</span></label><select id="f-seinen" name="seinen"><option value="">会員ではない</option><option value="会長">会長</option><option value="副会長">副会長</option><option value="会計">会計</option><option value="会計監査">会計監査</option><option value="幹事">幹事</option><option value="相談役">相談役</option><option value="会員">会員</option></select><div class="hint">選ぶと、青年部会の名簿にも載ります。</div></div><div class="full "><label for="f-name">会社名・工場名<span class="req">必須</span></label><input type="text" id="f-name" name="name" value="" maxlength="60" placeholder="例：○○鉄工(株)" autocomplete="off"></div><div class=""><label for="f-rep">代表者名<span class="opt">任意</span></label><input type="text" id="f-rep" name="rep" value="" maxlength="40" placeholder="例：秋田 太郎" autocomplete="off"></div><div class=""><label for="f-zip">郵便番号<span class="opt">任意</span></label><input type="text" id="f-zip" name="zip" value="" maxlength="8" placeholder="010-0941" autocomplete="off"></div><div class="full "><label for="f-addr">所在地<span class="req">必須</span></label><input type="text" id="f-addr" name="addr" value="" maxlength="100" placeholder="例：秋田市川尻町字大川反170-44" autocomplete="off"><div class="hint">「秋田県」は付けずに、市町村名から入力してください。地域での絞り込みに使います。</div></div><div class=""><label for="f-tel">電話番号<span class="req">必須</span></label><input type="tel" id="f-tel" name="tel" value="" maxlength="15" placeholder="018-863-9222" autocomplete="off"></div><div class=""><label for="f-fax">FAX番号<span class="opt">任意</span></label><input type="tel" id="f-fax" name="fax" value="" maxlength="15" placeholder="018-863-9995" autocomplete="off"></div><div class="full "><label for="f-url">公式サイトのアドレス<span class="opt">任意</span></label><input type="url" id="f-url" name="url" value="" maxlength="200" placeholder="https://" autocomplete="off"><div class="hint">入力すると、公開ページに「公式サイト」ボタンが出ます。</div></div></div><div class="actions"><button class="btn" type="submit">追加する</button><a class="btn line" href="p02.html">やめて一覧に戻る</a></div></form></main>
+
+<div style="position:sticky;bottom:0;z-index:50;background:#fff7e0;border-top:2px solid #d9a400;color:#5a4300;font:13px/1.6 'Noto Sans JP',Meiryo,sans-serif;padding:8px 16px;text-align:center">見本の画面です。入力や保存をしても実際の名簿・予定・資料・書き込みは変わりません。</div>
+<script>
+(() => {
+  const NEXT = {"login":"p02","setup":"p02","save":"p02","profile":"p05","delete":"p02","move":"p02","asof":"p02","logout":"p01","password":"p02","news_save":"p12","news_delete":"p12","union_save":"p14"};
+  // ▲▼は、本物と同じようにその場で入れ替えて見せる
+  const refresh = box => {
+    const items = [...box.parentElement.querySelectorAll(":scope > ." + box.classList[0])].filter(x => x.querySelector('button[name="mv"]'));
+    items.forEach((x, i) => {
+      x.querySelector('button[value$="up"]').disabled = i === 0;
+      x.querySelector('button[value$="down"]').disabled = i === items.length - 1;
+    });
+  };
+  const notice = text => {
+    let m = document.getElementById("demo-msg");
+    if (!m) { m = document.createElement("div"); m.id = "demo-msg"; m.className = "msg"; m.setAttribute("role", "status"); document.querySelector("main").prepend(m); }
+    m.textContent = text;
+    m.scrollIntoView({ block: "center" });
+  };
+  document.addEventListener("submit", e => {
+    e.preventDefault();
+    const sb = e.submitter;
+    if (sb && sb.name === "mv") {
+      const box = sb.closest(".pphoto, .prow");
+      const up = sb.value.endsWith("up");
+      const other = up ? box.previousElementSibling : box.nextElementSibling;
+      if (other && other.classList.contains(box.classList[0]) && other.querySelector('button[name="mv"]')) {
+        up ? box.parentElement.insertBefore(box, other) : box.parentElement.insertBefore(other, box);
+        refresh(box); notice("並び順を変えました。（入力中の内容も保存しました）");
+      }
+      return;
+    }
+    const d = e.target.querySelector('[name="do"]');
+    const to = d && NEXT[d.value];
+    if (to === "stay") { notice("見本のため、書き込みは保存されません。実際は、ここに会社名つきで表示されます。"); return; }
+    if (to) location.href = to + ".html";
+  });
+  document.addEventListener("click", e => { const a = e.target.closest('a[href="#"]'); if (a) e.preventDefault(); });
+})();
+</script>
+</body>
+</html>

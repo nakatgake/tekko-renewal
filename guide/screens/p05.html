@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>紹介ページの編集｜名簿管理</title>
+<style>
+:root { --ink:#14273a; --steel:#1f4e79; --deep:#0f2740; --line:#d5dde6; --mist:#f1f4f8; --paper:#fff; --sub:#55677a; --primer:#b0432c; --ok:#2c7566; }
+* { box-sizing: border-box; }
+body { margin:0; background:var(--mist); color:var(--ink); font:16px/1.7 "Noto Sans JP","Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif; }
+a { color:var(--steel); }
+.bar { background:var(--deep); color:#fff; }
+.bar .in { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px 20px; padding-block:14px; }
+.bar strong { font-size:17px; letter-spacing:.04em; }
+.bar small { display:block; font-size:12px; color:#b9c9d8; }
+.bar nav { display:flex; flex-wrap:wrap; align-items:center; gap:6px 18px; font-size:14px; }
+.bar a { color:#fff; }
+.in { max-width:1180px; margin-inline:auto; padding-inline:20px; }
+main.in { padding-block:28px 60px; }
+h1 { font-size:24px; margin:0 0 18px; line-height:1.4; }
+h2 { font-size:18px; margin:0 0 12px; }
+.card { background:var(--paper); border:1px solid var(--line); padding:22px; margin-bottom:20px; }
+.narrow { max-width:520px; margin-inline:auto; }
+.msg { padding:12px 16px; margin-bottom:16px; border-left:5px solid var(--ok); background:#e9f4f1; }
+.msg.err { border-color:var(--primer); background:#fbece8; }
+.btn { display:inline-block; font-family:inherit; font-weight:700; font-size:15px; line-height:1; padding:12px 18px; border:1px solid var(--steel); background:var(--steel); color:#fff; border-radius:4px; cursor:pointer; text-decoration:none; }
+.btn:hover { background:var(--deep); }
+.btn.line { background:#fff; color:var(--steel); }
+.btn.line:hover { background:var(--mist); }
+.btn.danger { background:var(--primer); border-color:var(--primer); }
+.btn.sm { font-size:13px; padding:8px 10px; font-weight:500; }
+.btn.link { background:none; border:0; color:#fff; padding:0; text-decoration:underline; font-weight:400; font-size:14px; }
+.btn[disabled] { opacity:.3; cursor:default; }
+:focus-visible { outline:3px solid var(--primer); outline-offset:2px; }
+.toolbar { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px; }
+.counts { color:var(--sub); font-size:14px; }
+.tw { overflow-x:auto; background:var(--paper); border:1px solid var(--line); border-top:3px solid var(--steel); }
+table { border-collapse:collapse; width:100%; min-width:900px; }
+th, td { text-align:left; padding:10px 12px; border-bottom:1px solid var(--line); font-size:14px; vertical-align:middle; }
+thead th { background:var(--mist); font-size:12px; color:var(--sub); font-weight:500; white-space:nowrap; }
+td.name { font-weight:700; font-size:15px; }
+td.name small { display:block; font-weight:400; color:var(--sub); font-size:12px; }
+td.num { white-space:nowrap; font-variant-numeric:tabular-nums; }
+.g { display:inline-block; min-width:30px; padding:2px 6px; text-align:center; font-weight:700; color:#fff; background:var(--steel); border-radius:2px; font-size:13px; }
+.g.N, .g.A { background:#fff; color:var(--sub); border:1px solid var(--line); }
+.ops { display:flex; gap:6px; align-items:center; white-space:nowrap; }
+.ops form { margin:0; }
+.grid { display:grid; grid-template-columns:1fr 1fr; gap:18px 20px; }
+.grid .full { grid-column:1 / -1; }
+label { display:block; font-weight:700; font-size:14px; margin-bottom:6px; }
+label .opt { font-weight:400; color:var(--sub); font-size:12px; margin-left:6px; }
+label .req { font-weight:700; color:var(--primer); font-size:12px; margin-left:6px; }
+input[type=text], input[type=password], input[type=url], input[type=tel], select { width:100%; font:16px/1.4 inherit; padding:11px 12px; border:1px solid #aab7c4; border-radius:4px; background:#fff; color:var(--ink); }
+.hint { font-size:12px; color:var(--sub); margin-top:4px; }
+.ferr { font-size:13px; color:var(--primer); font-weight:700; margin-top:4px; }
+.has-err input, .has-err select { border-color:var(--primer); }
+.actions { display:flex; flex-wrap:wrap; gap:12px; margin-top:24px; }
+.inline { display:flex; flex-wrap:wrap; gap:10px; align-items:end; }
+.inline > div { flex:1 1 220px; }
+dl.confirm { display:grid; grid-template-columns:7em 1fr; gap:6px 14px; margin:14px 0 0; }
+dl.confirm dt { color:var(--sub); font-size:14px; }
+dl.confirm dd { margin:0; }
+textarea { width:100%; font:15px/1.6 inherit; padding:10px 12px; border:1px solid #aab7c4; border-radius:4px; background:#fff; color:var(--ink); resize:vertical; }
+input[type=number] { width:100%; font:16px/1.4 inherit; padding:11px 8px; border:1px solid #aab7c4; border-radius:4px; }
+input[type=file] { font:14px/1.4 inherit; max-width:100%; }
+.mv { display:flex; flex-wrap:wrap; align-items:center; gap:4px; align-self:end; }
+.mvl { width:100%; font-size:12px; color:var(--sub); margin-bottom:3px; }
+.mv .btn.sm { padding:8px 11px; }
+.prow { display:grid; grid-template-columns:92px 1fr 190px; gap:8px 12px; padding:14px 0; border-top:1px solid var(--line); }
+.prow .wide { grid-column:1 / -1; }
+.prow label, .pphoto label { font-size:12px; font-weight:500; color:var(--sub); margin-bottom:3px; }
+.prow.blank { background:var(--mist); margin-inline:-22px; padding-inline:22px; }
+.pphoto { display:grid; grid-template-columns:150px 92px 1fr auto; gap:8px 14px; align-items:end; padding:12px 0; border-top:1px solid var(--line); }
+.pphoto img, .mainphoto img { display:block; width:150px; height:112px; object-fit:cover; border:1px solid var(--line); background:var(--mist); }
+.mainphoto { display:flex; flex-wrap:wrap; gap:16px 24px; align-items:flex-start; }
+.check { display:flex; align-items:center; gap:6px; font-size:14px; font-weight:500; white-space:nowrap; margin:0 0 10px; }
+.check input { width:18px; height:18px; }
+.stick { position:sticky; bottom:0; background:var(--paper); border-top:2px solid var(--steel); padding:14px 22px; margin:0 -1px; display:flex; flex-wrap:wrap; gap:12px; align-items:center; }
+.note { font-size:13px; color:var(--sub); margin:0 0 6px; }
+.tag { display:inline-block; font-size:12px; color:var(--sub); white-space:nowrap; }
+@media (max-width:640px) { .grid { grid-template-columns:1fr; } .prow { grid-template-columns:92px 1fr; } .prow .kind { grid-column:1 / -1; } .pphoto { grid-template-columns:110px 1fr; } .pphoto img { width:110px; height:82px; } .pphoto .cap, .pphoto .del { grid-column:1 / -1; } }
+</style>
+</head>
+<body>
+<header class="bar"><div class="in">
+  <div><strong>組合員名簿 管理画面</strong><small>秋田県鐵構工業協同組合</small></div>
+    <nav>
+    <a href="p02.html">名簿一覧</a>
+    <a href="p12.html">お知らせ</a>
+    <a href="p14.html">組合の基本情報</a>
+    <a href="p07.html">組合員専用ページの管理</a>
+    <a href="#">公開ページを見る</a>
+    <a href="#">パスワード変更</a>
+    <form method="post" action="?"><input type="hidden" name="csrf" value="bef2edb65751aeb4e6680b18dfe3d61af8365e80131819c7ed2ab57b355da903"><input type="hidden" name="do" value="logout"><button class="btn link" type="submit">ログアウト</button></form>
+  </nav>
+  </div></header>
+<main class="in">
+<div class="toolbar"><h1 style="margin:0">紹介ページの編集<br><small style="font-size:16px;font-weight:500">藤嶋鉄工(株)</small></h1><a class="btn line" href="#">公開ページで見る</a></div><p class="counts">会社名・所在地・電話・FAX・代表者・公式サイトは「<a href="p03.html">組合員の修正</a>」で直します。ここでは、紹介ページの外観写真・会社概要・写真を編集します。</p><form method="post" action="?" enctype="multipart/form-data"><input type="hidden" name="csrf" value="bef2edb65751aeb4e6680b18dfe3d61af8365e80131819c7ed2ab57b355da903"><input type="hidden" name="do" value="profile"><input type="hidden" name="id" value="m03"><button type="submit" tabindex="-1" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden">保存</button><div class="card"><h2>外観写真</h2><p class="note">紹介ページのいちばん上に出る写真です。JPEG・PNG・GIF・WebP、1枚 2MB まで。</p><div class="mainphoto"><div><img src="img/members/m03-main.jpg" alt="現在の外観写真"><label class="check" style="margin-top:8px"><input type="checkbox" name="photo_del" value="1">この写真を外す</label></div><div><label for="f-photo">別の写真に差し替える</label><input type="file" id="f-photo" name="photo" accept="image/jpeg,image/png,image/gif,image/webp"></div></div></div><div class="card" id="rows"><h2>会社概要の項目</h2><p class="note">▲▼で項目の並び順を入れ替えられます。押すと、入力中の内容も一緒に保存されます。</p><p class="note">形式が「一覧」の項目は、1行に1つ「名称：数」の形で書きます（例：一級建築士：2人）。「：」のない行は小見出しになります。</p><p class="note">項目を消すには、見出しと内容の両方を空にして保存します。</p><div class="prow"><div class="mv"><span class="mvl">並び順</span><button class="btn line sm" type="submit" name="mv" value="r0up" aria-label="資本金を上へ" disabled>▲</button><button class="btn line sm" type="submit" name="mv" value="r0down" aria-label="資本金を下へ">▼</button></div><div><label for="r0l">見出し</label><input type="text" id="r0l" name="rows[0][label]" value="資本金" maxlength="40" autocomplete="off"></div><div class="kind"><label for="r0k">形式</label><select id="r0k" name="rows[0][kind]"><option value="text" selected>文章</option><option value="list">一覧（名称：数）</option></select></div><div class="wide"><label for="r0t">内容</label><textarea id="r0t" name="rows[0][text]" rows="2" maxlength="5000">10,000千円</textarea></div></div><div class="prow"><div class="mv"><span class="mvl">並び順</span><button class="btn line sm" type="submit" name="mv" value="r1up" aria-label="創業を上へ">▲</button><button class="btn line sm" type="submit" name="mv" value="r1down" aria-label="創業を下へ">▼</button></div><div><label for="r1l">見出し</label><input type="text" id="r1l" name="rows[1][label]" value="創業" maxlength="40" autocomplete="off"></div><div class="kind"><label for="r1k">形式</label><select id="r1k" name="rows[1][kind]"><option value="text" selected>文章</option><option value="list">一覧（名称：数）</option></select></div><div class="wide"><label for="r1t">内容</label><textarea id="r1t" name="rows[1][text]" rows="2" maxlength="5000">大正15年</textarea></div></div><div class="prow"><div class="mv"><span class="mvl">並び順</span><button class="btn line sm" type="submit" name="mv" value="r2up" aria-label="敷地面積を上へ">▲</button><button class="btn line sm" type="submit" name="mv" value="r2down" aria-label="敷地面積を下へ">▼</button></div><div><label for="r2l">見出し</label><input type="text" id="r2l" name="rows[2][label]" value="敷地面積" maxlength="40" autocomplete="off"></div><div class="kind"><label for="r2k">形式</label><select id="r2k" name="rows[2][kind]"><option value="text" selected>文章</option><option value="list">一覧（名称：数）</option></select></div><div class="wide"><label for="r2t">内容</label><textarea id="r2t" name="rows[2][text]" rows="2" maxlength="5000">28,014㎡</textarea></div></div><div class="prow"><div class="mv"><span class="mvl">並び順</span><button class="btn line sm" type="submit" name="mv" value="r3up" aria-label="建物面積を上へ">▲</button><button class="btn line sm" type="submit" name="mv" value="r3down" aria-label="建物面積を下へ">▼</button></div><div><label for="r3l">見出し</label><input type="text" id="r3l" name="rows[3][label]" value="建物面積" maxlength="40" autocomplete="off"></div><div class="kind"><label for="r3k">形式</label><select id="r3k" name="rows[3][kind]"><option value="text" selected>文章</option><option value="list">一覧（名称：数）</option></select></div><div class="wide"><label for="r3t">内容</label><textarea id="r3t" name="rows[3][text]" rows="2" maxlength="5000">4,518㎡</textarea></div></div><div class="prow"><div class="mv"><span class="mvl">並び順</span><button class="btn line sm" type="submit" name="mv" value="r4up" aria-label="代表者を上へ">▲</button><button class="btn line sm" type="submit" name="mv" value="r4down" aria-label="代表者を下へ">▼</button></div><div><label for="r4l">見出し</label><input type="text" id="r4l" name="rows[4][label]" value="代表者" maxlength="40" autocomplete="off"></div><div class="kind"><label for="r4k">形式</label><select id="r4k" name="rows[4][kind]"><option value="text" selected>文章</option><option value="list">一覧（名称：数）</option></select></div><div class="wide"><label for="r4t">内容</label><textarea id="r4t" name="rows[4][text]" rows="2" maxlength="5000">代表取締役社長　藤嶋　誠彦</textarea></div></div><div class="prow"><div class="mv"><span class="mvl">並び順</span><button class="btn line sm" type="submit" name="mv" value="r5up" aria-label="役員を上へ">▲</button><button class="btn line sm" type="submit" name="mv" value="r5down" aria-label="役員を下へ">▼</button></div><div><label for="r5l">見出し</label><input type="text" id="r5l" name="rows[5][label]" value="役員" maxlength="40" autocomplete="off"></div><div class="kind"><label for="r5k">形式</label><select id="r5k" name="rows[5][kind]"><option value="text" selected>文章</option><option value="list">一覧（名称：数）</option></select></div><div class="wide"><label for="r5t">内容</label><textarea id="r5t" name="rows[5][text]" rows="3" maxlength="5000">常務取締役　田村　好司
+取締役　藤嶋　鉄晴
+取締役工場長　近藤　淳</textarea></div></div><div class="prow"><div class="mv"><span class="mvl">並び順</span><button class="btn line sm" type="submit" name="mv" value="r6up" aria-label="本社を上へ">▲</button><button class="btn line sm" type="submit" name="mv" value="r6down" aria-label="本社を下へ">▼</button></div><div><label for="r6l">見出し</label><input type="text" id="r6l" name="rows[6][label]" value="本社" maxlength="40" autocomplete="off"></div><div class="kind"><label for="r6k">形式</label><select id="r6k" name="rows[6][kind]"><option value="text" selected>文章</option><option value="list">一覧（名称：数）</option></select></div><div class="wide"><label for="r6t">内容</label><textarea id="r6t" name="rows[6][text]" rows="2" maxlength="5000">〒017-0876 秋田県大館市餅田字向田1番地</textarea></div></div><div class="prow"><div class="mv"><span class="mvl">並び順</span><button class="btn line sm" type="submit" name="mv" value="r7up" aria-label="工場を上へ">▲</button><button class="btn line sm" type="submit" name="mv" value="r7down" aria-label="工場を下へ">▼</button></div><div><label for="r7l">見出し</label><input type="text" id="r7l" name="rows[7][label]" value="工場" maxlength="40" autocomplete="off"></div><div class="kind"><label for="r7k">形式</label><select id="r7k" name="rows[7][kind]"><option value="text" selected>文章</option><option value="list">一覧（名称：数）</option></select></div><div class="wide"><label for="r7t">内容</label><textarea id="r7t" name="rows[7][text]" rows="3" maxlength="5000">〒017-0876
+秋田県大館市餅田字向田1番地
+TEL/0186-49-2288 　FAX/0186-49-3627</textarea></div></div><div class="prow"><div class="mv"><span class="mvl">並び順</span><button class="btn line sm" type="submit" name="mv" value="r8up" aria-label="企業の特色を上へ">▲</button><button class="btn line sm" type="submit" name="mv" value="r8down" aria-label="企業の特色を下へ">▼</button></div><div><label for="r8l">見出し</label><input type="text" id="r8l" name="rows[8][label]" value="企業の特色" maxlength="40" autocomplete="off"></div><div class="kind"><label for="r8k">形式</label><select id="r8k" name="rows[8][kind]"><option value="text" selected>文章</option><option value="list">一覧（名称：数）</option></select></div><div class="wide"><label for="r8t">内容</label><textarea id="r8t" name="rows[8][text]" rows="2" maxlength="5000">全社員資格取得を心がけ技術力の向上に力を注ぎ、高品質な製品をお客様にお届けする事を心掛けております。</textarea></div></div><div class="prow"><div class="mv"><span class="mvl">並び順</span><button class="btn line sm" type="submit" name="mv" value="r9up" aria-label="建設業等の許認可を上へ">▲</button><button class="btn line sm" type="submit" name="mv" value="r9down" aria-label="建設業等の許認可を下へ">▼</button></div><div><label for="r9l">見出し</label><input type="text" id="r9l" name="rows[9][label]" value="建設業等の許認可" maxlength="40" autocomplete="off"></div><div class="kind"><label for="r9k">形式</label><select id="r9k" name="rows[9][kind]"><option value="text" selected>文章</option><option value="list">一覧（名称：数）</option></select></div><div class="wide"><label for="r9t">内容</label><textarea id="r9t" name="rows[9][text]" rows="3" maxlength="5000">秋田県知事許可（般-2）第2598号
+建築一式工事業
+鋼構造物工事業</textarea></div></div><div class="prow"><div class="mv"><span class="mvl">並び順</span><button class="btn line sm" type="submit" name="mv" value="r10up" aria-label="その他の指定等を上へ">▲</button><button class="btn line sm" type="submit" name="mv" value="r10down" aria-label="その他の指定等を下へ">▼</button></div><div><label for="r10l">見出し</label><input type="text" id="r10l" name="rows[10][label]" value="その他の指定等" maxlength="40" autocomplete="off"></div><div class="kind"><label for="r10k">形式</label><select id="r10k" name="rows[10][kind]"><option value="text" selected>文章</option><option value="list">一覧（名称：数）</option></select></div><div class="wide"><label for="r10t">内容</label><textarea id="r10t" name="rows[10][text]" rows="2" maxlength="5000">国土交通大臣認定Hグレード
+高田機工株式会社生研トラス指定</textarea></div></div><div class="prow"><div class="mv"><span class="mvl">並び順</span><button class="btn line sm" type="submit" name="mv" value="r11up" aria-label="営業品目を上へ">▲</button><button class="btn line sm" type="submit" name="mv" value="r11down" aria-label="営業品目を下へ">▼</button></div><div><label for="r11l">見出し</label><input type="text" id="r11l" name="rows[11][label]" value="営業品目" maxlength="40" autocomplete="off"></div><div class="kind"><label for="r11k">形式</label><select id="r11k" name="rows[11][kind]"><option value="text" selected>文章</option><option value="list">一覧（名称：数）</option></select></div><div class="wide"><label for="r11t">内容</label><textarea id="r11t" name="rows[11][text]" rows="2" maxlength="5000">各種鋼構造物加工、クレーン作業</textarea></div></div><div class="prow"><div class="mv"><span class="mvl">並び順</span><button class="btn line sm" type="submit" name="mv" value="r12up" aria-label="生産能力を上へ">▲</button><button class="btn line sm" type="submit" name="mv" value="r12down" aria-label="生産能力を下へ">▼</button></div><div><label for="r12l">見出し</label><input type="text" id="r12l" name="rows[12][label]" value="生産能力" maxlength="40" autocomplete="off"></div><div class="kind"><label for="r12k">形式</label><select id="r12k" name="rows[12][kind]"><option value="text" selected>文章</option><option value="list">一覧（名称：数）</option></select></div><div class="wide"><label for="r12t">内容</label><textarea id="r12t" name="rows[12][text]" rows="2" maxlength="5000">500t／月</textarea></div></div><div class="prow"><div class="mv"><span class="mvl">並び順</span><button class="btn line sm" type="submit" name="mv" value="r13up" aria-label="主な納入・取引先を上へ">▲</button><button class="btn line sm" type="submit" name="mv" value="r13down" aria-label="主な納入・取引先を下へ">▼</button></div><div><label for="r13l">見出し</label><input type="text" id="r13l" name="rows[13][label]" value="主な納入・取引先" maxlength="40" autocomplete="off"></div><div class="kind"><label for="r13k">形式</label><select id="r13k" name="rows[13][kind]"><option value="text" selected>文章</option><option value="list">一覧（名称：数）</option></select></div><div class="wide"><label for="r13t">内容</label><textarea id="r13t" name="rows[13][text]" rows="2" maxlength="5000">清水建設（株）、大成建設（株）、（株）丸本組、（株）伊藤羽州建設、（株）吉田産業、カメイ（株）、高田機工（株）、その他各ゼネコン　（順不同）</textarea></div></div><div class="prow"><div class="mv"><span class="mvl">並び順</span><button class="btn line sm" type="submit" name="mv" value="r14up" aria-label="従業員数を上へ">▲</button><button class="btn line sm" type="submit" name="mv" value="r14down" aria-label="従業員数を下へ">▼</button></div><div><label for="r14l">見出し</label><input type="text" id="r14l" name="rows[14][label]" value="従業員数" maxlength="40" autocomplete="off"></div><div class="kind"><label for="r14k">形式</label><select id="r14k" name="rows[14][kind]"><option value="text" selected>文章</option><option value="list">一覧（名称：数）</option></select></div><div class="wide"><label for="r14t">内容</label><textarea id="r14t" name="rows[14][text]" rows="2" maxlength="5000">男子33人、女子12人、ベトナム人4人、計49人</textarea></div></div><div class="prow"><div class="mv"><span class="mvl">並び順</span><button class="btn line sm" type="submit" name="mv" value="r15up" aria-label="管理技術者を上へ">▲</button><button class="btn line sm" type="submit" name="mv" value="r15down" aria-label="管理技術者を下へ">▼</button></div><div><label for="r15l">見出し</label><input type="text" id="r15l" name="rows[15][label]" value="管理技術者" maxlength="40" autocomplete="off"></div><div class="kind"><label for="r15k">形式</label><select id="r15k" name="rows[15][kind]"><option value="text">文章</option><option value="list" selected>一覧（名称：数）</option></select></div><div class="wide"><label for="r15t">内容</label><textarea id="r15t" name="rows[15][text]" rows="14" maxlength="5000">WES1級：2人
+WES2級：7人
+鉄骨製作管理技術者1級：8人
+超音波探傷レベル1：2人
+建築鉄骨超音波検査技術者：1人
+建築鉄骨製品検査技術者：5人
+建築鉄骨外観検査技術AWA：1人
+鉄骨工事管理責任者：1人
+建築高力ボルト接合管理者：5人
+溶融亜鉛めっき高力ボルト技術者：3人
+1級建築施工管理技士：2人
+2級建築施工管理技士：5人
+1級土木施工管理技士：2人
+2級土木施工管理技士：4人
+スタッド溶接技術A級：2人
+構造物現図、鉄工技能士：4人</textarea></div></div><div class="prow"><div class="mv"><span class="mvl">並び順</span><button class="btn line sm" type="submit" name="mv" value="r16up" aria-label="技能資格者を上へ">▲</button><button class="btn line sm" type="submit" name="mv" value="r16down" aria-label="技能資格者を下へ">▼</button></div><div><label for="r16l">見出し</label><input type="text" id="r16l" name="rows[16][label]" value="技能資格者" maxlength="40" autocomplete="off"></div><div class="kind"><label for="r16k">形式</label><select id="r16k" name="rows[16][kind]"><option value="text">文章</option><option value="list" selected>一覧（名称：数）</option></select></div><div class="wide"><label for="r16t">内容</label><textarea id="r16t" name="rows[16][text]" rows="11" maxlength="5000">A-2F：8人
+A-2H：3人
+SA-2F：9人
+SA-2H：5人
+SA-3F：8人
+SA-3H：6人
+SA-3V：7人
+AW検定 鋼製エンドタブ(工場)：5人
+代替エンドタブ(工場)：3人
+ロボット溶接オペレータ：2人</textarea></div></div><div class="prow"><div class="mv"><span class="mvl">並び順</span><button class="btn line sm" type="submit" name="mv" value="r17up" aria-label="主要製品又は工事実績を上へ">▲</button><button class="btn line sm" type="submit" name="mv" value="r17down" aria-label="主要製品又は工事実績を下へ">▼</button></div><div><label for="r17l">見出し</label><input type="text" id="r17l" name="rows[17][label]" value="主要製品又は工事実績" maxlength="40" autocomplete="off"></div><div class="kind"><label for="r17k">形式</label><select id="r17k" name="rows[17][kind]"><option value="text" selected>文章</option><option value="list">一覧（名称：数）</option></select></div><div class="wide"><label for="r17t">内容</label><textarea id="r17t" name="rows[17][text]" rows="2" maxlength="5000">－</textarea></div></div><div class="prow"><div class="mv"><span class="mvl">並び順</span><button class="btn line sm" type="submit" name="mv" value="r18up" aria-label="関連会社を上へ">▲</button><button class="btn line sm" type="submit" name="mv" value="r18down" aria-label="関連会社を下へ">▼</button></div><div><label for="r18l">見出し</label><input type="text" id="r18l" name="rows[18][label]" value="関連会社" maxlength="40" autocomplete="off"></div><div class="kind"><label for="r18k">形式</label><select id="r18k" name="rows[18][kind]"><option value="text" selected>文章</option><option value="list">一覧（名称：数）</option></select></div><div class="wide"><label for="r18t">内容</label><textarea id="r18t" name="rows[18][text]" rows="2" maxlength="5000">－</textarea></div></div><div class="prow"><div class="mv"><span class="mvl">並び順</span><button class="btn line sm" type="submit" name="mv" value="r19up" aria-label="取引銀行を上へ">▲</button><button class="btn line sm" type="submit" name="mv" value="r19down" aria-label="取引銀行を下へ">▼</button></div><div><label for="r19l">見出し</label><input type="text" id="r19l" name="rows[19][label]" value="取引銀行" maxlength="40" autocomplete="off"></div><div class="kind"><label for="r19k">形式</label><select id="r19k" name="rows[19][kind]"><option value="text" selected>文章</option><option value="list">一覧（名称：数）</option></select></div><div class="wide"><label for="r19t">内容</label><textarea id="r19t" name="rows[19][text]" rows="2" maxlength="5000">中小企業金融公庫、秋田銀行大館駅前支店</textarea></div></div><div class="prow"><div class="mv"><span class="mvl">並び順</span><button class="btn line sm" type="submit" name="mv" value="r20up" aria-label="主要設備の概要を上へ">▲</button><button class="btn line sm" type="submit" name="mv" value="r20down" aria-label="主要設備の概要を下へ" disabled>▼</button></div><div><label for="r20l">見出し</label><input type="text" id="r20l" name="rows[20][label]" value="主要設備の概要" maxlength="40" autocomplete="off"></div><div class="kind"><label for="r20k">形式</label><select id="r20k" name="rows[20][kind]"><option value="text">文章</option><option value="list" selected>一覧（名称：数）</option></select></div><div class="wide"><label for="r20t">内容</label><textarea id="r20t" name="rows[20][text]" rows="14" maxlength="5000">丸・帯鋸盤：2台
+自動ガス切断機：4台
+開先加工専用機：4台
+ボール盤等：5台
+プレス等：1台
+ショットラスト：3台
+手動アーク溶接機：14台
+半自動アーク溶接機：12台
+ガウジング機：5台
+乾燥機50ｋｇ/日：2台
+溶接ロボット：2台
+ポジショナー溶接治具：8台
+超音波探傷機：1台
+天井クレーン（5.0ｔ）ほか：21台
+橋型クレーン：2台
+クレーン車（75tR他）：2台</textarea></div></div><h2 style="margin:22px 0 0">項目を追加する</h2><p class="note">使う分だけ入力してください。追加した項目はいちばん下に入ります。足りないときは、保存するとまた空欄が出ます。</p><div class="prow blank"><div class="mv"><span class="mvl">新しい項目</span></div><div><label for="r21l">見出し</label><input type="text" id="r21l" name="rows[21][label]" value="" maxlength="40" placeholder="例：資本金" autocomplete="off"></div><div class="kind"><label for="r21k">形式</label><select id="r21k" name="rows[21][kind]"><option value="text" selected>文章</option><option value="list">一覧（名称：数）</option></select></div><div class="wide"><label for="r21t">内容</label><textarea id="r21t" name="rows[21][text]" rows="2" maxlength="5000"></textarea></div></div><div class="prow blank"><div class="mv"><span class="mvl">新しい項目</span></div><div><label for="r22l">見出し</label><input type="text" id="r22l" name="rows[22][label]" value="" maxlength="40" placeholder="例：資本金" autocomplete="off"></div><div class="kind"><label for="r22k">形式</label><select id="r22k" name="rows[22][kind]"><option value="text" selected>文章</option><option value="list">一覧（名称：数）</option></select></div><div class="wide"><label for="r22t">内容</label><textarea id="r22t" name="rows[22][text]" rows="2" maxlength="5000"></textarea></div></div><div class="prow blank"><div class="mv"><span class="mvl">新しい項目</span></div><div><label for="r23l">見出し</label><input type="text" id="r23l" name="rows[23][label]" value="" maxlength="40" placeholder="例：資本金" autocomplete="off"></div><div class="kind"><label for="r23k">形式</label><select id="r23k" name="rows[23][kind]"><option value="text" selected>文章</option><option value="list">一覧（名称：数）</option></select></div><div class="wide"><label for="r23t">内容</label><textarea id="r23t" name="rows[23][text]" rows="2" maxlength="5000"></textarea></div></div><div class="prow blank"><div class="mv"><span class="mvl">新しい項目</span></div><div><label for="r24l">見出し</label><input type="text" id="r24l" name="rows[24][label]" value="" maxlength="40" placeholder="例：資本金" autocomplete="off"></div><div class="kind"><label for="r24k">形式</label><select id="r24k" name="rows[24][kind]"><option value="text" selected>文章</option><option value="list">一覧（名称：数）</option></select></div><div class="wide"><label for="r24t">内容</label><textarea id="r24t" name="rows[24][text]" rows="2" maxlength="5000"></textarea></div></div><div class="prow blank"><div class="mv"><span class="mvl">新しい項目</span></div><div><label for="r25l">見出し</label><input type="text" id="r25l" name="rows[25][label]" value="" maxlength="40" placeholder="例：資本金" autocomplete="off"></div><div class="kind"><label for="r25k">形式</label><select id="r25k" name="rows[25][kind]"><option value="text" selected>文章</option><option value="list">一覧（名称：数）</option></select></div><div class="wide"><label for="r25t">内容</label><textarea id="r25t" name="rows[25][text]" rows="2" maxlength="5000"></textarea></div></div></div><div class="card" id="photos"><h2>写真（製品・工事実績など）</h2><p class="note">公開ページでは、この画面の上から順に並びます。▲▼で入れ替えられます（押すと、入力中の内容も一緒に保存されます）。説明は写真の下に表示されます。</p><div class="pphoto"><img src="img/members/m03-01.jpg" alt="" loading="lazy"><input type="hidden" name="photos[0][src]" value="img/members/m03-01.jpg"><div class="mv"><span class="mvl">並び順</span><button class="btn line sm" type="submit" name="mv" value="p0up" aria-label="大館市本庁舎建設工事（建築工事）を上へ" disabled>▲</button><button class="btn line sm" type="submit" name="mv" value="p0down" aria-label="大館市本庁舎建設工事（建築工事）を下へ">▼</button></div><div class="cap"><label for="p0c">説明</label><input type="text" id="p0c" name="photos[0][cap]" value="大館市本庁舎建設工事（建築工事）" maxlength="120" autocomplete="off"></div><label class="check del"><input type="checkbox" name="photos[0][del]" value="1">削除する</label></div><div class="pphoto"><img src="img/members/m03-02.jpg" alt="" loading="lazy"><input type="hidden" name="photos[1][src]" value="img/members/m03-02.jpg"><div class="mv"><span class="mvl">並び順</span><button class="btn line sm" type="submit" name="mv" value="p1up" aria-label="大館地区統合高校（仮称） 体育館棟建築工事[大館桂桜高校]を上へ">▲</button><button class="btn line sm" type="submit" name="mv" value="p1down" aria-label="大館地区統合高校（仮称） 体育館棟建築工事[大館桂桜高校]を下へ" disabled>▼</button></div><div class="cap"><label for="p1c">説明</label><input type="text" id="p1c" name="photos[1][cap]" value="大館地区統合高校（仮称） 体育館棟建築工事[大館桂桜高校]" maxlength="120" autocomplete="off"></div><label class="check del"><input type="checkbox" name="photos[1][del]" value="1">削除する</label></div><h2 style="margin:22px 0 0">写真を追加する</h2><p class="note">一度に 4 枚まで。1枚 2MB まで。大きな写真は自動で縮小して保存します。</p><div class="prow" style="grid-template-columns:1fr 1fr"><div><label for="np0">写真 1</label><input type="file" id="np0" name="np0" accept="image/jpeg,image/png,image/gif,image/webp"></div><div><label for="npcap0">説明</label><input type="text" id="npcap0" name="npcap0" maxlength="120" autocomplete="off"></div></div><div class="prow" style="grid-template-columns:1fr 1fr"><div><label for="np1">写真 2</label><input type="file" id="np1" name="np1" accept="image/jpeg,image/png,image/gif,image/webp"></div><div><label for="npcap1">説明</label><input type="text" id="npcap1" name="npcap1" maxlength="120" autocomplete="off"></div></div><div class="prow" style="grid-template-columns:1fr 1fr"><div><label for="np2">写真 3</label><input type="file" id="np2" name="np2" accept="image/jpeg,image/png,image/gif,image/webp"></div><div><label for="npcap2">説明</label><input type="text" id="npcap2" name="npcap2" maxlength="120" autocomplete="off"></div></div><div class="prow" style="grid-template-columns:1fr 1fr"><div><label for="np3">写真 4</label><input type="file" id="np3" name="np3" accept="image/jpeg,image/png,image/gif,image/webp"></div><div><label for="npcap3">説明</label><input type="text" id="npcap3" name="npcap3" maxlength="120" autocomplete="off"></div></div></div><div class="stick"><button class="btn" type="submit">紹介ページを保存する</button><a class="btn line" href="p02.html">保存せずに一覧に戻る</a></div></form></main>
+
+<div style="position:sticky;bottom:0;z-index:50;background:#fff7e0;border-top:2px solid #d9a400;color:#5a4300;font:13px/1.6 'Noto Sans JP',Meiryo,sans-serif;padding:8px 16px;text-align:center">見本の画面です。入力や保存をしても実際の名簿・予定・資料・書き込みは変わりません。</div>
+<script>
+(() => {
+  const NEXT = {"login":"p02","setup":"p02","save":"p02","profile":"p05","delete":"p02","move":"p02","asof":"p02","logout":"p01","password":"p02","news_save":"p12","news_delete":"p12","union_save":"p14"};
+  // ▲▼は、本物と同じようにその場で入れ替えて見せる
+  const refresh = box => {
+    const items = [...box.parentElement.querySelectorAll(":scope > ." + box.classList[0])].filter(x => x.querySelector('button[name="mv"]'));
+    items.forEach((x, i) => {
+      x.querySelector('button[value$="up"]').disabled = i === 0;
+      x.querySelector('button[value$="down"]').disabled = i === items.length - 1;
+    });
+  };
+  const notice = text => {
+    let m = document.getElementById("demo-msg");
+    if (!m) { m = document.createElement("div"); m.id = "demo-msg"; m.className = "msg"; m.setAttribute("role", "status"); document.querySelector("main").prepend(m); }
+    m.textContent = text;
+    m.scrollIntoView({ block: "center" });
+  };
+  document.addEventListener("submit", e => {
+    e.preventDefault();
+    const sb = e.submitter;
+    if (sb && sb.name === "mv") {
+      const box = sb.closest(".pphoto, .prow");
+      const up = sb.value.endsWith("up");
+      const other = up ? box.previousElementSibling : box.nextElementSibling;
+      if (other && other.classList.contains(box.classList[0]) && other.querySelector('button[name="mv"]')) {
+        up ? box.parentElement.insertBefore(box, other) : box.parentElement.insertBefore(other, box);
+        refresh(box); notice("並び順を変えました。（入力中の内容も保存しました）");
+      }
+      return;
+    }
+    const d = e.target.querySelector('[name="do"]');
+    const to = d && NEXT[d.value];
+    if (to === "stay") { notice("見本のため、書き込みは保存されません。実際は、ここに会社名つきで表示されます。"); return; }
+    if (to) location.href = to + ".html";
+  });
+  document.addEventListener("click", e => { const a = e.target.closest('a[href="#"]'); if (a) e.preventDefault(); });
+})();
+</script>
+</body>
+</html>

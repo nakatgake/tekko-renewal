@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>名簿一覧｜名簿管理</title>
+<style>
+:root { --ink:#14273a; --steel:#1f4e79; --deep:#0f2740; --line:#d5dde6; --mist:#f1f4f8; --paper:#fff; --sub:#55677a; --primer:#b0432c; --ok:#2c7566; }
+* { box-sizing: border-box; }
+body { margin:0; background:var(--mist); color:var(--ink); font:16px/1.7 "Noto Sans JP","Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif; }
+a { color:var(--steel); }
+.bar { background:var(--deep); color:#fff; }
+.bar .in { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px 20px; padding-block:14px; }
+.bar strong { font-size:17px; letter-spacing:.04em; }
+.bar small { display:block; font-size:12px; color:#b9c9d8; }
+.bar nav { display:flex; flex-wrap:wrap; align-items:center; gap:6px 18px; font-size:14px; }
+.bar a { color:#fff; }
+.in { max-width:1180px; margin-inline:auto; padding-inline:20px; }
+main.in { padding-block:28px 60px; }
+h1 { font-size:24px; margin:0 0 18px; line-height:1.4; }
+h2 { font-size:18px; margin:0 0 12px; }
+.card { background:var(--paper); border:1px solid var(--line); padding:22px; margin-bottom:20px; }
+.narrow { max-width:520px; margin-inline:auto; }
+.msg { padding:12px 16px; margin-bottom:16px; border-left:5px solid var(--ok); background:#e9f4f1; }
+.msg.err { border-color:var(--primer); background:#fbece8; }
+.btn { display:inline-block; font-family:inherit; font-weight:700; font-size:15px; line-height:1; padding:12px 18px; border:1px solid var(--steel); background:var(--steel); color:#fff; border-radius:4px; cursor:pointer; text-decoration:none; }
+.btn:hover { background:var(--deep); }
+.btn.line { background:#fff; color:var(--steel); }
+.btn.line:hover { background:var(--mist); }
+.btn.danger { background:var(--primer); border-color:var(--primer); }
+.btn.sm { font-size:13px; padding:8px 10px; font-weight:500; }
+.btn.link { background:none; border:0; color:#fff; padding:0; text-decoration:underline; font-weight:400; font-size:14px; }
+.btn[disabled] { opacity:.3; cursor:default; }
+:focus-visible { outline:3px solid var(--primer); outline-offset:2px; }
+.toolbar { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px; }
+.counts { color:var(--sub); font-size:14px; }
+.tw { overflow-x:auto; background:var(--paper); border:1px solid var(--line); border-top:3px solid var(--steel); }
+table { border-collapse:collapse; width:100%; min-width:900px; }
+th, td { text-align:left; padding:10px 12px; border-bottom:1px solid var(--line); font-size:14px; vertical-align:middle; }
+thead th { background:var(--mist); font-size:12px; color:var(--sub); font-weight:500; white-space:nowrap; }
+td.name { font-weight:700; font-size:15px; }
+td.name small { display:block; font-weight:400; color:var(--sub); font-size:12px; }
+td.num { white-space:nowrap; font-variant-numeric:tabular-nums; }
+.g { display:inline-block; min-width:30px; padding:2px 6px; text-align:center; font-weight:700; color:#fff; background:var(--steel); border-radius:2px; font-size:13px; }
+.g.N, .g.A { background:#fff; color:var(--sub); border:1px solid var(--line); }
+.ops { display:flex; gap:6px; align-items:center; white-space:nowrap; }
+.ops form { margin:0; }
+.grid { display:grid; grid-template-columns:1fr 1fr; gap:18px 20px; }
+.grid .full { grid-column:1 / -1; }
+label { display:block; font-weight:700; font-size:14px; margin-bottom:6px; }
+label .opt { font-weight:400; color:var(--sub); font-size:12px; margin-left:6px; }
+label .req { font-weight:700; color:var(--primer); font-size:12px; margin-left:6px; }
+input[type=text], input[type=password], input[type=url], input[type=tel], select { width:100%; font:16px/1.4 inherit; padding:11px 12px; border:1px solid #aab7c4; border-radius:4px; background:#fff; color:var(--ink); }
+.hint { font-size:12px; color:var(--sub); margin-top:4px; }
+.ferr { font-size:13px; color:var(--primer); font-weight:700; margin-top:4px; }
+.has-err input, .has-err select { border-color:var(--primer); }
+.actions { display:flex; flex-wrap:wrap; gap:12px; margin-top:24px; }
+.inline { display:flex; flex-wrap:wrap; gap:10px; align-items:end; }
+.inline > div { flex:1 1 220px; }
+dl.confirm { display:grid; grid-template-columns:7em 1fr; gap:6px 14px; margin:14px 0 0; }
+dl.confirm dt { color:var(--sub); font-size:14px; }
+dl.confirm dd { margin:0; }
+textarea { width:100%; font:15px/1.6 inherit; padding:10px 12px; border:1px solid #aab7c4; border-radius:4px; background:#fff; color:var(--ink); resize:vertical; }
+input[type=number] { width:100%; font:16px/1.4 inherit; padding:11px 8px; border:1px solid #aab7c4; border-radius:4px; }
+input[type=file] { font:14px/1.4 inherit; max-width:100%; }
+.mv { display:flex; flex-wrap:wrap; align-items:center; gap:4px; align-self:end; }
+.mvl { width:100%; font-size:12px; color:var(--sub); margin-bottom:3px; }
+.mv .btn.sm { padding:8px 11px; }
+.prow { display:grid; grid-template-columns:92px 1fr 190px; gap:8px 12px; padding:14px 0; border-top:1px solid var(--line); }
+.prow .wide { grid-column:1 / -1; }
+.prow label, .pphoto label { font-size:12px; font-weight:500; color:var(--sub); margin-bottom:3px; }
+.prow.blank { background:var(--mist); margin-inline:-22px; padding-inline:22px; }
+.pphoto { display:grid; grid-template-columns:150px 92px 1fr auto; gap:8px 14px; align-items:end; padding:12px 0; border-top:1px solid var(--line); }
+.pphoto img, .mainphoto img { display:block; width:150px; height:112px; object-fit:cover; border:1px solid var(--line); background:var(--mist); }
+.mainphoto { display:flex; flex-wrap:wrap; gap:16px 24px; align-items:flex-start; }
+.check { display:flex; align-items:center; gap:6px; font-size:14px; font-weight:500; white-space:nowrap; margin:0 0 10px; }
+.check input { width:18px; height:18px; }
+.stick { position:sticky; bottom:0; background:var(--paper); border-top:2px solid var(--steel); padding:14px 22px; margin:0 -1px; display:flex; flex-wrap:wrap; gap:12px; align-items:center; }
+.note { font-size:13px; color:var(--sub); margin:0 0 6px; }
+.tag { display:inline-block; font-size:12px; color:var(--sub); white-space:nowrap; }
+@media (max-width:640px) { .grid { grid-template-columns:1fr; } .prow { grid-template-columns:92px 1fr; } .prow .kind { grid-column:1 / -1; } .pphoto { grid-template-columns:110px 1fr; } .pphoto img { width:110px; height:82px; } .pphoto .cap, .pphoto .del { grid-column:1 / -1; } }
+</style>
+</head>
+<body>
+<header class="bar"><div class="in">
+  <div><strong>組合員名簿 管理画面</strong><small>秋田県鐵構工業協同組合</small></div>
+    <nav>
+    <a href="p02.html">名簿一覧</a>
+    <a href="p12.html">お知らせ</a>
+    <a href="p14.html">組合の基本情報</a>
+    <a href="p07.html">組合員専用ページの管理</a>
+    <a href="#">公開ページを見る</a>
+    <a href="#">パスワード変更</a>
+    <form method="post" action="?"><input type="hidden" name="csrf" value="bef2edb65751aeb4e6680b18dfe3d61af8365e80131819c7ed2ab57b355da903"><input type="hidden" name="do" value="logout"><button class="btn link" type="submit">ログアウト</button></form>
+  </nav>
+  </div></header>
+<main class="in">
+  <div class="msg" role="status">パスワードを設定しました。</div>
+<div class="toolbar">
+  <h1 style="margin:0">名簿一覧</h1>
+  <a class="btn" href="p04.html">＋ 組合員を追加</a>
+</div>
+<p class="counts">組合員 25社／準組合員 1社／青年部会 16社　・　公開ページと同じ順（区分順）で表示しています。▲▼で同じ区分の中の順番を入れ替えられます。</p>
+
+<div class="tw">
+<table>
+  <thead><tr><th>区分</th><th>会社名・代表者</th><th>所在地</th><th>電話／FAX</th><th>サイト</th><th>青年部会</th><th>紹介ページ</th><th>操作</th></tr></thead>
+  <tbody>
+      <tr>
+      <td><span class="g H" title="Hグレード">H</span></td>
+      <td class="name">千代田興業(株)<small>藤澤 正弘</small></td>
+      <td>〒011-0911<br>秋田市飯島字古道下川端219-11</td>
+      <td class="num">018-874-8115<br>018-874-8116</td>
+      <td><a href="http://www.k-chiyoda.jp/">あり</a></td>
+      <td>相談役</td>
+      <td>        <a class="btn line sm" href="p05.html">編集</a>
+        <span class="tag">項目21・写真8</span>
+      </td>
+      <td>
+        <div class="ops">
+          <form method="post" action="?"><input type="hidden" name="csrf" value="bef2edb65751aeb4e6680b18dfe3d61af8365e80131819c7ed2ab57b355da903"><input type="hidden" name="do" value="move"><input type="hidden" name="id" value="m01"><input type="hidden" name="dir" value="up"><button class="btn line sm" type="submit" aria-label="千代田興業(株)を上へ" disabled>▲</button></form>
+          <form method="post" action="?"><input type="hidden" name="csrf" value="bef2edb65751aeb4e6680b18dfe3d61af8365e80131819c7ed2ab57b355da903"><input type="hidden" name="do" value="move"><input type="hidden" name="id" value="m01"><input type="hidden" name="dir" value="down"><button class="btn line sm" type="submit" aria-label="千代田興業(株)を下へ">▼</button></form>
+          <a class="btn sm" href="p03.html">修正</a>
+          <a class="btn line sm" href="p06.html">削除</a>
+        </div>
+      </td>
+    </tr>
+      <tr>
+      <td><span class="g H" title="Hグレード">H</span></td>
+      <td class="name">東光鉄工(株)<small>菅原 訪順</small></td>
+      <td>〒017-0012<br>大館市釈迦内字稲荷山下19-1</td>
+      <td class="num">0186-48-3234<br>0186-48-5922</td>
+      <td><a href="https://www.toko-tekko.co.jp/">あり</a></td>
+      <td>会員</td>
+      <td>        <a class="btn line sm" href="p05.html">編集</a>
+        <span class="tag">項目29・写真18</span>
+      </td>
+      <td>
+        <div class="ops">
+          <form method="post" action="?"><input type="hidden" name="csrf" value="bef2edb65751aeb4e6680b18dfe3d61af8365e80131819c7ed2ab57b355da903"><input type="hidden" name="do" value="move"><input type="hidden" name="id" value="m02"><input type="hidden" name="dir" value="up"><button class="btn line sm" type="submit" aria-label="東光鉄工(株)を上へ">▲</button></form>
+          <form method="post" action="?"><input type="hidden" name="csrf" value="bef2edb65751aeb4e6680b18dfe3d61af8365e80131819c7ed2ab57b355da903"><input type="hidden" name="do" value="move"><input type="hidden" name="id" value="m02"><input type="hidden" name="dir" value="down"><button class="btn line sm" type="submit" aria-label="東光鉄工(株)を下へ">▼</button></form>
+          <a class="btn sm" href="p03.html">修正</a>
+          <a class="btn line sm" href="p06.html">削除</a>
+        </div>
+      </td>
+    </tr>
+      <tr>
+      <td><span class="g H" title="Hグレード">H</span></td>
+      <td class="name">藤嶋鉄工(株)<small>藤嶋 誠彦</small></td>
+      <td>〒017-0876<br>大館市餅田字向田1番地</td>
+      <td class="num">0186-49-2288<br>0186-49-3627</td>
+      <td><a href="http://fujishima-t.co.jp/">あり</a></td>
+      <td>会員</td>
+      <td>        <a class="btn line sm" href="p05.html">編集</a>
+        <span class="tag">項目21・写真3</span>
+      </td>
+      <td>
+        <div class="ops">
+          <form method="post" action="?"><input type="hidden" name="csrf" value="bef2edb65751aeb4e6680b18dfe3d61af8365e80131819c7ed2ab57b355da903"><input type="hidden" name="do" value="move"><input type="hidden" name="id" value="m03"><input type="hidden" name="dir" value="up"><button class="btn line sm" type="submit" aria-label="藤嶋鉄工(株)を上へ">▲</button></form>
+          <form method="post" action="?"><input type="hidden" name="csrf" value="bef2edb65751aeb4e6680b18dfe3d61af8365e80131819c7ed2ab57b355da903"><input type="hidden" name="do" value="move"><input type="hidden" name="id" value="m03"><input type="hidden" name="dir" value="down"><button class="btn line sm" type="submit" aria-label="藤嶋鉄工(株)を下へ">▼</button></form>
+          <a class="btn sm" href="p03.html">修正</a>
+          <a class="btn line sm" href="p06.html">削除</a>
+        </div>
+      </td>
+    </tr>
+      <tr>
+      <td><span class="g H" title="Hグレード">H</span></td>
+      <td class="name">興栄建設(株)<small>齋藤 靖</small></td>
+      <td>〒014-0072<br>大仙市大曲西根字西道地野502-2</td>
+      <td class="num">0187-68-2288<br>0187-68-4488</td>
+      <td><a href="https://www.koei-con.com/">あり</a></td>
+      <td>会長</td>
+      <td>        <a class="btn line sm" href="p05.html">編集</a>
+        <span class="tag">項目18・写真1</span>
+      </td>
+      <td>
+        <div class="ops">
+          <form method="post" action="?"><input type="hidden" name="csrf" value="bef2edb65751aeb4e6680b18dfe3d61af8365e80131819c7ed2ab57b355da903"><input type="hidden" name="do" value="move"><input type="hidden" name="id" value="m04"><input type="hidden" name="dir" value="up"><button class="btn line sm" type="submit" aria-label="興栄建設(株)を上へ">▲</button></form>
+          <form method="post" action="?"><input type="hidden" name="csrf" value="bef2edb65751aeb4e6680b18dfe3d61af8365e80131819c7ed2ab57b355da903"><input type="hidden" name="do" value="move"><input type="hidden" name="id" value="m04"><input type="hidden" name="dir" value="down"><button class="btn line sm" type="submit" aria-label="興栄建設(株)を下へ">▼</button></form>
+          <a class="btn sm" href="p03.html">修正</a>
+          <a class="btn line sm" href="p06.html">削除</a>
+        </div>
+      </td>
+    </tr>
+      <tr>
+      <td><span class="g H" title="Hグレード">H</span></td>
+      <td class="name">(株)ユーホク<small>奥山 孝直</small></td>
+      <td>〒012-0107<br>湯沢市稲庭町字早坂下5-1</td>
+      <td class="num">0183-43-2039<br>0183-43-2047</td>
+      <td><a href="https://yuuhoku.jp/">あり</a></td>
+      <td>幹事</td>
+      <td>        <a class="btn line sm" href="p05.html">編集</a>
+        <span class="tag">項目23・写真1</span>
+      </td>
+      <td>
+        <div class="ops">
+          <form method="post" action="?"><input type="hidden" name="csrf" value="bef2edb65751aeb4e6680b18dfe3d61af8365e80131819c7ed2ab57b355da903"><input type="hidden" name="do" value="move"><input type="hidden" name="id" value="m05"><input type="hidden" name="dir" value="up"><button class="btn line sm" type="submit" aria-label="(株)ユーホクを上へ">▲</button></form>
+          <form method="post" action="?"><input type="hidden" name="csrf" value="bef2edb65751aeb4e6680b18dfe3d61af8365e80131819c7ed2ab57b355da903"><input type="hidden" name="do" value="move"><input type="hidden" name="id" value="m05"><input type="hidden" name="dir" value="down"><button class="btn line sm" type="submit" aria-label="(株)ユーホクを下へ">▼</button></form>
+          <a class="btn sm" href="p03.html">修正</a>
+          <a class="btn line sm" href="p06.html">削除</a>
+        </div>
+      </td>
+    </tr>
+      <tr>
+      <td><span class="g H" title="Hグレード">H</span></td>
+      <td class="name">(株)市川スチールエンジニアリング<small>市川 幸司</small></td>
+      <td>〒016-0111<br>能代市字仁井田白山83-2</td>
+      <td class="num">0185-74-7775<br>0185-74-7776</td>
+      <td><a href="https://www.ichikawa-steel.co.jp/">あり</a></td>
+      <td></td>
+      <td>        <a class="btn line sm" href="p05.html">編集</a>
+        <span class="tag">項目24・写真5</span>
+      </td>
+      <td>
+        <div class="ops">
+          <form method="post" action="?"><input type="hidden" name="csrf" value="bef2edb65751aeb4e6680b18dfe3d61af8365e80131819c7ed2ab57b355da903"><input type="hidden" name="do" value="move"><input type="hidden" name="id" value="m06"><input type="hidden" name="dir" value="up"><button class="btn line sm" type="submit" aria-label="(株)市川スチールエンジニアリングを上へ">▲</button></form>
+          <form method="post" action="?"><input type="hidden" name="csrf" value="bef2edb65751aeb4e6680b18dfe3d61af8365e80131819c7ed2ab57b355da903"><input type="hidden" name="do" value="move"><input type="hidden" name="id" value="m06"><input type="hidden" name="dir" value="down"><button class="btn line sm" type="submit" aria-label="(株)市川スチールエンジニアリングを下へ" disabled>▼</button></form>
+          <a class="btn sm" href="p03.html">修正</a>
+          <a class="btn line sm" href="p06.html">削除</a>
+        </div>
+      </td>
+    </tr>
+      <tr>
+      <td><span class="g M" title="Mグレード">M</span></td>
+      <td class="name">新代工業(株)<small>佐藤 幸英</small></td>
+      <td>〒010-0901<br>秋田市保戸野桜町19-5</td>
+      <td class="num">018-863-3141<br>018-863-3143</td>
+      <td><span style="color:var(--sub)">なし</span></td>
+      <td>幹事</td>
+      <td>        <a class="btn line sm" href="p05.html">編集</a>
+        <span class="tag">項目23・写真2</span>
+      </td>
+      <td>
+        <div class="ops">
+          <form method="post" action="?"><input type="hidden" name="csrf" value="bef2edb65751aeb4e6680b18dfe3d61af8365e80131819c7ed2ab57b355da903"><input type="hidden" name="do" value="move"><input type="hidden" name="id" value="m07"><input type="hidden" name="dir" value="up"><button class="btn line sm" type="submit" aria-label="新代工業(株)を上へ" disabled>▲</button></form>
+          <form method="post" action="?"><input type="hidden" name="csrf" value="bef2edb65751aeb4e6680b18dfe3d61af8365e80131819c7ed2ab57b355da903"><input type="hidden" name="do" value="move"><input type="hidden" name="id" value="m07"><input type="hidden" name="dir" value="down"><button class="btn line sm" type="submit" aria-label="新代工業(株)を下へ">▼</button></form>
+          <a class="btn sm" href="p03.html">修正</a>
+          <a class="btn line sm" href="p06.html">削除</a>
+        </div>
+      </td>
+    </tr>
+      <tr>
+      <td><span class="g M" title="Mグレード">M</span></td>
+      <td class="name">新興工業(株)<small>菊池 哲</small></td>
+      <td>〒010-1601<br>秋田市向浜一丁目5-14</td>
+      <td class="num">018-863-3831<br>018-863-3832</td>
+      <td><span style="color:var(--sub)">なし</span></td>
+      <td>会計監査</td>
+      <td>        <a class="btn line sm" href="p05.html">編集</a>
+        <span class="tag">項目22・写真1</span>
+      </td>
+      <td>
+        <div class="ops">
+          <form method="post" action="?"><input type="hidden" name="csrf" value="bef2edb65751aeb4e6680b18dfe3d61af8365e80131819c7ed2ab57b355da903"><input type="hidden" name="do" value="move"><input type="hidden" name="id" value="m08"><input type="hidden" name="dir" value="up"><button class="btn line sm" type="submit" aria-label="新興工業(株)を上へ">▲</button></form>
+          <form method="post" action="?"><input type="hidden" name="csrf" value="bef2edb65751aeb4e6680b18dfe3d61af8365e80131819c7ed2ab57b355da903"><input type="hidden" name="do" value="move"><input type="hidden" name="id" value="m08"><input type="hidden" name="dir" value="down"><button class="btn line sm" type="submit" aria-label="新興工業(株)を下へ">▼</button></form>
+          <a class="btn sm" href="p03.html">修正</a>
+          <a class="btn line sm" href="p06.html">削除</a>
+        </div>
+      </td>
+    </tr>
+      <tr>
+      <td><span class="g M" title="Mグレード">M</span></td>
+      <td class="name">(株)粟津鉄工建設<small>粟津 憲靖</small></td>
+      <td>〒014-0066<br>大仙市川目字月山132-2</td>
+      <td class="num">0187-63-7871<br>0187-63-4237</td>
+      <td><span style="color:var(--sub)">なし</span></td>
+      <td>幹事</td>
+      <td>        <a class="btn line sm" href="p05.html">編集</a>
+        <span class="tag">項目21・写真4</span>
+      </td>
+      <td>
+        <div class="ops">
+          <form method="post" action="?"><input type="hidden" name="csrf" value="bef2edb65751aeb4e6680b18dfe3d61af8365e80131819c7ed2ab57b355da903"><input type="hidden" name="do" value="move"><input type="hidden" name="id" value="m09"><input type="hidden" name="dir" value="up"><button class="btn line sm" type="submit" aria-label="(株)粟津鉄工建設を上へ">▲</button></form>
+          <form method="post" action="?"><input type="hidden" name="csrf" value="bef2edb65751aeb4e6680b18dfe3d61af8365e80131819c7ed2ab57b355da903"><input type="hidden" name="do" value="move"><input type="hidden" name="id" value="m09"><input type="hidden" name="dir" value="down"><button class="btn line sm" type="submit" aria-label="(株)粟津鉄工建設を下へ">▼</button></form>
+          <a class="btn sm" href="p03.html">修正</a>
+          <a class="btn line sm" href="p06.html">削除</a>
+        </div>
+      </td>
+    </tr>
+      <tr>
+      <td><span class="g M" title="Mグレード">M</span></td>
+      <td class="name">佐々喜興業(株)<small>佐々木 一喜</small></td>
+      <td>〒010-1601<br>秋田市向浜一丁目3-8</td>
+      <td class="num">018-862-0242<br>018-866-5766</td>
+      <td><span style="color:var(--sub)">なし</span></td>
+      <td>会員</td>
+      <td>        <a class="btn line sm" href="p05.html">編集</a>
+        <span class="tag">項目16・写真1</span>
+      </td>
+      <td>
+        <div class="ops">
+          <form method="post" action="?"><input type="hidden" name="csrf" value="bef2edb65751aeb4e6680b18dfe3d61af8365e80131819c7ed2ab57b355da903"><input type="hidden" name="do" value="move"><input type="hidden" name="id" value="m10"><input type="hidden" name="dir" value="up"><button class="btn line sm" type="submit" aria-label="佐々喜興業(株)を上へ">▲</button></form>
+          <form method="post" action="?"><input type="hidden" name="csrf" value="bef2edb65751aeb4e6680b18dfe3d61af8365e80131819c7ed2ab57b355da903"><input type="hidden" name="do" value="move"><input type="hidden" name="id" value="m10"><input type="hidden" name="dir" value="down"><button class="btn line sm" type="submit" aria-label="佐々喜興業(株)を下へ">▼</button></form>
+          <a class="btn sm" href="p03.html">修正</a>
+          <a class="btn line sm" href="p06.html">削除</a>
+        </div>
+      </td>
+    </tr>
+      <tr>
+      <td><span class="g M" title="Mグレード">M</span></td>
+      <td class="name">シー・アンド・シー(株)<small>目時 博明</small></td>
+      <td>〒017-0204<br>鹿角郡小坂町荒谷字手紙沢54-5</td>
+      <td class="num">0186-29-2976<br>0186-29-3018</td>
+      <td><a href="https://candc-a.co.jp/">あり</a></td>
+      <td></td>
+      <td>        <a class="btn line sm" href="p05.html">編集</a>
+        <span class="tag">項目23・写真9</span>
+      </td>
+      <td>
+        <div class="ops">
+          <form method="post" action="?"><input type="hidden" name="csrf" value="bef2edb65751aeb4e6680b18dfe3d61af8365e80131819c7ed2ab57b355da903"><input type="hidden" name="do" value="move"><input type="hidden" name="id" value="m11"><input type="hidden" name="dir" value="up"><button class="btn line sm" type="submit" aria-label="シー・アンド・シー(株)を上へ">▲</button></form>
+          <form method="post" action="?"><input type="hidden" name="csrf" value="bef2edb65751aeb4e6680b18dfe3d61af8365e80131819c7ed2ab57b355da903"><input type="hidden" name="do" value="move"><input type="hidden" name="id" value="m11"><input type="hidden" name="dir" value="down"><button class="btn line sm" type="submit" aria-label="シー・アンド・シー(株)を下へ">▼</button></form>
+          <a class="btn sm" href="p03.html">修正</a>
+          <a class="btn line sm" href="p06.html">削除</a>
+        </div>
+      </td>
+    </tr>
+      <tr>
+      <td><span class="g M" title="Mグレード">M</span></td>
+      <td class="name">(有)熊谷鉄工<small>熊谷 隆雄</small></td>
+      <td>〒019-1601<br>大仙市太田町横沢字堤田379-2</td>
+      <td class="num">0187-88-2012<br>0187-89-1997</td>
+      <td><a href="https://www.kumagai-tk.co.jp/">あり</a></td>
+      <td>副会長</td>
+      <td>        <a class="btn line sm" href="p05.html">編集</a>
+        <span class="tag">項目21・写真1</span>
+      </td>
+      <td>
+        <div class="ops">
+          <form method="post" action="?"><input type="hidden" name="csrf" value="bef2edb65751aeb4e6680b18dfe3d61af8365e80131819c7ed2ab57b355da903"><input type="hidden" name="do" value="move"><input type="hidden" name="id" value="m12"><input type="hidden" name="dir" value="up"><button class="btn line sm" type="submit" aria-label="(有)熊谷鉄工を上へ">▲</button></form>
+          <form method="post" action="?"><input type="hidden" name="csrf" value="bef2edb65751aeb4e6680b18dfe3d61af8365e80131819c7ed2ab57b355da903"><input type="hidden" name="do" value="move"><input type="hidden" name="id" value="m12"><input type="hidden" name="dir" value="down"><button class="btn line sm" type="submit" aria-label="(有)熊谷鉄工を下へ">▼</button></form>
+          <a class="btn sm" href="p03.html">修正</a>
+          <a class="btn line sm" href="p06.html">削除</a>
+        </div>
+      </td>
+    </tr>
+      <tr>
+      <td><span class="g M" title="Mグレード">M</span></td>
+      <td class="name">石垣鐵工(株)<small>石垣 咲和</small></td>
+      <td>〒018-5751<br>大館市二井田字前田野5-2</td>
+      <td class="num">0186-59-8102<br>0186-59-8103</td>
+      <td><a href="https://kaidan.biz/">あり</a></td>
+      <td>会員</td>
+      <td>        <a class="btn line sm" href="p05.html">編集</a>
+        <span class="tag">項目20・写真5</span>
+      </td>
+      <td>
+        <div class="ops">
+          <form method="post" action="?"><input type="hidden" name="csrf" value="bef2edb65751aeb4e6680b18dfe3d61af8365e80131819c7ed2ab57b355da903"><input type="hidden" name="do" value="move"><input type="hidden" name="id" value="m13"><input type="hidden" name="dir" value="up"><button class="btn line sm" type="submit" aria-label="石垣鐵工(株)を上へ">▲</button></form>
+          <form method="post" action="?"><input type="hidden" name="csrf" value="bef2edb65751aeb4e6680b18dfe3d61af8365e80131819c7ed2ab57b355da903"><input type="hidden" name="do" value="move"><input type="hidden" name="id" value="m13"><input type="hidden" name="dir" value="down"><button class="btn line sm" type="submit" aria-label="石垣鐵工(株)を下へ">▼</button></form>
+          <a class="btn sm" href="p03.html">修正</a>
+          <a class="btn line sm" href="p06.html">削除</a>
+        </div>
+      </td>
+    </tr>
+      <tr>
+      <td><span class="g M" title="Mグレード">M</span></td>
+      <td class="name">(有)加藤鐵建<small>加藤 俊巳</small></td>
+      <td>〒019-1605<br>大仙市太田町国見字伊勢堂190</td>
+      <td class="num">0187-88-2373<br>0187-88-2502</td>
+      <td><span style="color:var(--sub)">なし</span></td>
+      <td>会員</td>
+      <td>        <a class="btn line sm" href="p05.html">編集</a>
+        <span class="tag">項目23・写真1</span>
+      </td>
+      <td>
+        <div class="ops">
+          <form method="post" action="?"><input type="hidden" name="csrf" value="bef2edb65751aeb4e6680b18dfe3d61af8365e80131819c7ed2ab57b355da903"><input type="hidden" name="do" value="move"><input type="hidden" name="id" value="m14"><input type="hidden" name="dir" value="up"><button class="btn line sm" type="submit" aria-label="(有)加藤鐵建を上へ">▲</button></form>
+          <form method="post" action="?"><input type="hidden" name="csrf" value="bef2edb65751aeb4e6680b18dfe3d61af8365e80131819c7ed2ab57b355da903"><input type="hidden" name="do" value="move"><input type="hidden" name="id" value="m14"><input type="hidden" name="dir" value="down"><button class="btn line sm" type="submit" aria-label="(有)加藤鐵建を下へ">▼</button></form>
+          <a class="btn sm" href="p03.html">修正</a>
+          <a class="btn line sm" href="p06.html">削除</a>
+        </div>
+      </td>
+    </tr>
+      <tr>
+      <td><span class="g M" title="Mグレード">M</span></td>
+      <td class="name">(有)まるよし工業<small>工藤 喜一</small></td>
+      <td>〒010-1601<br>秋田市向浜一丁目6-6</td>
+      <td class="num">018-883-0750<br>018-883-0720</td>
+      <td><span style="color:var(--sub)">なし</span></td>
+      <td></td>
+      <td>        <a class="btn line sm" href="p05.html">編集</a>
+        <span class="tag">項目22・写真2</span>
+      </td>
+      <td>
+        <div class="ops">
+          <form method="post" action="?"><input type="hidden" name="csrf" value="bef2edb65751aeb4e6680b18dfe3d61af8365e80131819c7ed2ab57b355da903"><input type="hidden" name="do" value="move"><input type="hidden" name="id" value="m15"><input type="hidden" name="dir" value="up"><button class="btn line sm" type="submit" aria-label="(有)まるよし工業を上へ">▲</button></form>
+          <form method="post" action="?"><input type="hidden" name="csrf" value="bef2edb65751aeb4e6680b18dfe3d61af8365e80131819c7ed2ab57b355da903"><input type="hidden" name="do" value="move"><input type="hidden" name="id" value="m15"><input type="hidden" name="dir" value="down"><button class="btn line sm" type="submit" aria-label="(有)まるよし工業を下へ">▼</button></form>
+          <a class="btn sm" href="p03.html">修正</a>
+          <a class="btn line sm" href="p06.html">削除</a>
+        </div>
+      </td>
+    </tr>
+      <tr>
+      <td><span class="g M" title="Mグレード">M</span></td>
+      <td class="name">北嶋鉄工(株)<small>北嶋 伸也</small></td>
+      <td>〒018-3122<br>能代市二ツ井町飛根字新大林381-1</td>
+      <td class="num">0185-75-2107<br>0185-75-2642</td>
+      <td><span style="color:var(--sub)">なし</span></td>
+      <td>副会長</td>
+      <td>        <a class="btn line sm" href="p05.html">編集</a>
+        <span class="tag">項目18・写真0</span>
+      </td>
+      <td>
+        <div class="ops">
+          <form method="post" action="?"><input type="hidden" name="csrf" value="bef2edb65751aeb4e6680b18dfe3d61af8365e80131819c7ed2ab57b355da903"><input type="hidden" name="do" value="move"><input type="hidden" name="id" value="m16"><input type="hidden" name="dir" value="up"><button class="btn line sm" type="submit" aria-label="北嶋鉄工(株)を上へ">▲</button></form>
+          <form method="post" action="?"><input type="hidden" name="csrf" value="bef2edb65751aeb4e6680b18dfe3d61af8365e80131819c7ed2ab57b355da903"><input type="hidden" name="do" value="move"><input type="hidden" name="id" value="m16"><input type="hidden" name="dir" value="down"><button class="btn line sm" type="submit" aria-label="北嶋鉄工(株)を下へ" disabled>▼</button></form>
+          <a class="btn sm" href="p03.html">修正</a>
+          <a class="btn line sm" href="p06.html">削除</a>
+        </div>
+      </td>
+    </tr>
+      <tr>
+      <td><span class="g R" title="Rグレード">R</span></td>
+      <td class="name">(有)佐々木製作所<small>石郷岡 誠</small></td>
+      <td>〒010-1601<br>秋田市向浜一丁目6-1</td>
+      <td class="num">018-874-7881<br>018-874-7882</td>
+      <td><a href="http://www.sasakiss.co.jp/">あり</a></td>
+      <td></td>
+      <td>        <a class="btn line sm" href="p05.html">編集</a>
+        <span class="tag">項目21・写真1</span>
+      </td>
+      <td>
+        <div class="ops">
+          <form method="post" action="?"><input type="hidden" name="csrf" value="bef2edb65751aeb4e6680b18dfe3d61af8365e80131819c7ed2ab57b355da903"><input type="hidden" name="do" value="move"><input type="hidden" name="id" value="m17"><input type="hidden" name="dir" value="up"><button class="btn line sm" type="submit" aria-label="(有)佐々木製作所を上へ" disabled>▲</button></form>
+          <form method="post" action="?"><input type="hidden" name="csrf" value="bef2edb65751aeb4e6680b18dfe3d61af8365e80131819c7ed2ab57b355da903"><input type="hidden" name="do" value="move"><input type="hidden" name="id" value="m17"><input type="hidden" name="dir" value="down"><button class="btn line sm" type="submit" aria-label="(有)佐々木製作所を下へ">▼</button></form>
+          <a class="btn sm" href="p03.html">修正</a>
+          <a class="btn line sm" href="p06.html">削除</a>
+        </div>
+      </td>
+    </tr>
+      <tr>
+      <td><span class="g R" title="Rグレード">R</span></td>
+      <td class="name">明和ハウス工業(株)<small>渡辺 直樹</small></td>
+      <td>〒010-1633<br>秋田市新屋鳥木町1-35</td>
+      <td class="num">018-828-7100<br>018-828-7102</td>
+      <td><a href="https://meiwahouse.co.jp/">あり</a></td>
+      <td></td>
+      <td>        <a class="btn line sm" href="p05.html">編集</a>
+        <span class="tag">項目20・写真1</span>
+      </td>
+      <td>
+        <div class="ops">
+          <form method="post" action="?"><input type="hidden" name="csrf" value="bef2edb65751aeb4e6680b18dfe3d61af8365e80131819c7ed2ab57b355da903"><input type="hidden" name="do" value="move"><input type="hidden" name="id" value="m18"><input type="hidden" name="dir" value="up"><button class="btn line sm" type="submit" aria-label="明和ハウス工業(株)を上へ">▲</button></form>
+          <form method="post" action="?"><input type="hidden" name="csrf" value="bef2edb65751aeb4e6680b18dfe3d61af8365e80131819c7ed2ab57b355da903"><input type="hidden" name="do" value="move"><input type="hidden" name="id" value="m18"><input type="hidden" name="dir" value="down"><button class="btn line sm" type="submit" aria-label="明和ハウス工業(株)を下へ">▼</button></form>
+          <a class="btn sm" href="p03.html">修正</a>
+          <a class="btn line sm" href="p06.html">削除</a>
+        </div>
+      </td>
+    </tr>
+      <tr>
+      <td><span class="g R" title="Rグレード">R</span></td>
+      <td class="name">テック大洋工業(株) 秋田工場<small>鳥潟 佑樹</small></td>
+      <td>〒018-5751<br>大館市二井田字前田野94-15</td>
+      <td class="num">0186-42-5318<br>0186-42-8318</td>
+      <td><a href="http://ttkkakita-pole.jp/">あり</a></td>
+      <td></td>
+      <td>        <a class="btn line sm" href="p05.html">編集</a>
+        <span class="tag">項目23・写真1</span>
+      </td>
+      <td>
+        <div class="ops">
+          <form method="post" action="?"><input type="hidden" name="csrf" value="bef2edb65751aeb4e6680b18dfe3d61af8365e80131819c7ed2ab57b355da903"><input type="hidden" name="do" value="move"><input type="hidden" name="id" value="m19"><input type="hidden" name="dir" value="up"><button class="btn line sm" type="submit" aria-label="テック大洋工業(株) 秋田工場を上へ">▲</button></form>
+          <form method="post" action="?"><input type="hidden" name="csrf" value="bef2edb65751aeb4e6680b18dfe3d61af8365e80131819c7ed2ab57b355da903"><input type="hidden" name="do" value="move"><input type="hidden" name="id" value="m19"><input type="hidden" name="dir" value="down"><button class="btn line sm" type="submit" aria-label="テック大洋工業(株) 秋田工場を下へ" disabled>▼</button></form>
+          <a class="btn sm" href="p03.html">修正</a>
+          <a class="btn line sm" href="p06.html">削除</a>
+        </div>
+      </td>
+    </tr>
+      <tr>
+      <td><span class="g J" title="Jグレード">J</span></td>
+      <td class="name">(株)ワタケン<small>渡部 俊省</small></td>
+      <td>〒010-1601<br>秋田市向浜二丁目1-1</td>
+      <td class="num">018-865-2363<br>018-862-1817</td>
+      <td><a href="https://www.kk-wataken.jp/">あり</a></td>
+      <td></td>
+      <td>        <a class="btn line sm" href="p05.html">編集</a>
+        <span class="tag">項目19・写真3</span>
+      </td>
+      <td>
+        <div class="ops">
+          <form method="post" action="?"><input type="hidden" name="csrf" value="bef2edb65751aeb4e6680b18dfe3d61af8365e80131819c7ed2ab57b355da903"><input type="hidden" name="do" value="move"><input type="hidden" name="id" value="m20"><input type="hidden" name="dir" value="up"><button class="btn line sm" type="submit" aria-label="(株)ワタケンを上へ" disabled>▲</button></form>
+          <form method="post" action="?"><input type="hidden" name="csrf" value="bef2edb65751aeb4e6680b18dfe3d61af8365e80131819c7ed2ab57b355da903"><input type="hidden" name="do" value="move"><input type="hidden" name="id" value="m20"><input type="hidden" name="dir" value="down"><button class="btn line sm" type="submit" aria-label="(株)ワタケンを下へ" disabled>▼</button></form>
+          <a class="btn sm" href="p03.html">修正</a>
+          <a class="btn line sm" href="p06.html">削除</a>
+        </div>
+      </td>
+    </tr>
+      <tr>
+      <td><span class="g N" title="認定区分なし">－</span></td>
+      <td class="name">(有)工藤鉄工<small>鬼川 光洋</small></td>
+      <td>〒017-0878<br>大館市川口字横岩岱35</td>
+      <td class="num">0186-49-4541<br>0186-49-4604</td>
+      <td><span style="color:var(--sub)">なし</span></td>
+      <td></td>
+      <td>        <a class="btn line sm" href="p05.html">編集</a>
+        <span class="tag">項目21・写真1</span>
+      </td>
+      <td>
+        <div class="ops">
+          <form method="post" action="?"><input type="hidden" name="csrf" value="bef2edb65751aeb4e6680b18dfe3d61af8365e80131819c7ed2ab57b355da903"><input type="hidden" name="do" value="move"><input type="hidden" name="id" value="m21"><input type="hidden" name="dir" value="up"><button class="btn line sm" type="submit" aria-label="(有)工藤鉄工を上へ" disabled>▲</button></form>
+          <form method="post" action="?"><input type="hidden" name="csrf" value="bef2edb65751aeb4e6680b18dfe3d61af8365e80131819c7ed2ab57b355da903"><input type="hidden" name="do" value="move"><input type="hidden" name="id" value="m21"><input type="hidden" name="dir" value="down"><button class="btn line sm" type="submit" aria-label="(有)工藤鉄工を下へ">▼</button></form>
+          <a class="btn sm" href="p03.html">修正</a>
+          <a class="btn line sm" href="p06.html">削除</a>
+        </div>
+      </td>
+    </tr>
+      <tr>
+      <td><span class="g N" title="認定区分なし">－</span></td>
+      <td class="name">(株)東北機械製作所<small>中島 信勝</small></td>
+      <td>〒010-0065<br>秋田市茨島一丁目2-3</td>
+      <td class="num">018-862-5541<br>018-862-5590</td>
+      <td><a href="https://tmw.co.jp/">あり</a></td>
+      <td>会計</td>
+      <td>        <a class="btn line sm" href="p05.html">編集</a>
+        <span class="tag">項目26・写真1</span>
+      </td>
+      <td>
+        <div class="ops">
+          <form method="post" action="?"><input type="hidden" name="csrf" value="bef2edb65751aeb4e6680b18dfe3d61af8365e80131819c7ed2ab57b355da903"><input type="hidden" name="do" value="move"><input type="hidden" name="id" value="m22"><input type="hidden" name="dir" value="up"><button class="btn line sm" type="submit" aria-label="(株)東北機械製作所を上へ">▲</button></form>
+          <form method="post" action="?"><input type="hidden" name="csrf" value="bef2edb65751aeb4e6680b18dfe3d61af8365e80131819c7ed2ab57b355da903"><input type="hidden" name="do" value="move"><input type="hidden" name="id" value="m22"><input type="hidden" name="dir" value="down"><button class="btn line sm" type="submit" aria-label="(株)東北機械製作所を下へ">▼</button></form>
+          <a class="btn sm" href="p03.html">修正</a>
+          <a class="btn line sm" href="p06.html">削除</a>
+        </div>
+      </td>
+    </tr>
+      <tr>
+      <td><span class="g N" title="認定区分なし">－</span></td>
+      <td class="name">(株)三輪鉄建 秋田工場<small>山本 勇造</small></td>
+      <td>〒018-3124<br>能代市二ツ井切石字舘腰47</td>
+      <td class="num">0185-73-5987<br>0185-73-5988</td>
+      <td><a href="https://mitsuwatekken.jp/">あり</a></td>
+      <td>会員</td>
+      <td>        <a class="btn line sm" href="p05.html">編集</a>
+        <span class="tag">項目22・写真1</span>
+      </td>
+      <td>
+        <div class="ops">
+          <form method="post" action="?"><input type="hidden" name="csrf" value="bef2edb65751aeb4e6680b18dfe3d61af8365e80131819c7ed2ab57b355da903"><input type="hidden" name="do" value="move"><input type="hidden" name="id" value="m23"><input type="hidden" name="dir" value="up"><button class="btn line sm" type="submit" aria-label="(株)三輪鉄建 秋田工場を上へ">▲</button></form>
+          <form method="post" action="?"><input type="hidden" name="csrf" value="bef2edb65751aeb4e6680b18dfe3d61af8365e80131819c7ed2ab57b355da903"><input type="hidden" name="do" value="move"><input type="hidden" name="id" value="m23"><input type="hidden" name="dir" value="down"><button class="btn line sm" type="submit" aria-label="(株)三輪鉄建 秋田工場を下へ">▼</button></form>
+          <a class="btn sm" href="p03.html">修正</a>
+          <a class="btn line sm" href="p06.html">削除</a>
+        </div>
+      </td>
+    </tr>
+      <tr>
+      <td><span class="g N" title="認定区分なし">－</span></td>
+      <td class="name">(株)柳澤鉄工所<small>柳澤 康隆</small></td>
+      <td>〒018-5201<br>鹿角市花輪字六月田28</td>
+      <td class="num">0186-23-2233<br>0186-23-2244</td>
+      <td><a href="https://yana.co.jp/">あり</a></td>
+      <td>会員</td>
+      <td>        <a class="btn line sm" href="p05.html">編集</a>
+        <span class="tag">項目21・写真3</span>
+      </td>
+      <td>
+        <div class="ops">
+          <form method="post" action="?"><input type="hidden" name="csrf" value="bef2edb65751aeb4e6680b18dfe3d61af8365e80131819c7ed2ab57b355da903"><input type="hidden" name="do" value="move"><input type="hidden" name="id" value="m24"><input type="hidden" name="dir" value="up"><button class="btn line sm" type="submit" aria-label="(株)柳澤鉄工所を上へ">▲</button></form>
+          <form method="post" action="?"><input type="hidden" name="csrf" value="bef2edb65751aeb4e6680b18dfe3d61af8365e80131819c7ed2ab57b355da903"><input type="hidden" name="do" value="move"><input type="hidden" name="id" value="m24"><input type="hidden" name="dir" value="down"><button class="btn line sm" type="submit" aria-label="(株)柳澤鉄工所を下へ">▼</button></form>
+          <a class="btn sm" href="p03.html">修正</a>
+          <a class="btn line sm" href="p06.html">削除</a>
+        </div>
+      </td>
+    </tr>
+      <tr>
+      <td><span class="g N" title="認定区分なし">－</span></td>
+      <td class="name">(有)宝建工業<small>小林 俊也</small></td>
+      <td>〒016-0179<br>能代市浅内字船沢74-12</td>
+      <td class="num">0185-54-1571<br>0185-54-7345</td>
+      <td><span style="color:var(--sub)">なし</span></td>
+      <td></td>
+      <td>        <a class="btn line sm" href="p05.html">編集</a>
+        <span class="tag">項目21・写真1</span>
+      </td>
+      <td>
+        <div class="ops">
+          <form method="post" action="?"><input type="hidden" name="csrf" value="bef2edb65751aeb4e6680b18dfe3d61af8365e80131819c7ed2ab57b355da903"><input type="hidden" name="do" value="move"><input type="hidden" name="id" value="m25"><input type="hidden" name="dir" value="up"><button class="btn line sm" type="submit" aria-label="(有)宝建工業を上へ">▲</button></form>
+          <form method="post" action="?"><input type="hidden" name="csrf" value="bef2edb65751aeb4e6680b18dfe3d61af8365e80131819c7ed2ab57b355da903"><input type="hidden" name="do" value="move"><input type="hidden" name="id" value="m25"><input type="hidden" name="dir" value="down"><button class="btn line sm" type="submit" aria-label="(有)宝建工業を下へ" disabled>▼</button></form>
+          <a class="btn sm" href="p03.html">修正</a>
+          <a class="btn line sm" href="p06.html">削除</a>
+        </div>
+      </td>
+    </tr>
+      <tr>
+      <td><span class="g A" title="準組合員">準</span></td>
+      <td class="name">(有)石垣プラント<small>石垣 淳一</small></td>
+      <td>〒017-0012<br>大館市釈迦内字長者森41-3</td>
+      <td class="num">0186-48-5875<br>0186-48-6283</td>
+      <td><span style="color:var(--sub)">なし</span></td>
+      <td></td>
+      <td>        <a class="btn line sm" href="p05.html">作成</a>
+        <span class="tag">なし</span>
+      </td>
+      <td>
+        <div class="ops">
+          <form method="post" action="?"><input type="hidden" name="csrf" value="bef2edb65751aeb4e6680b18dfe3d61af8365e80131819c7ed2ab57b355da903"><input type="hidden" name="do" value="move"><input type="hidden" name="id" value="m26"><input type="hidden" name="dir" value="up"><button class="btn line sm" type="submit" aria-label="(有)石垣プラントを上へ" disabled>▲</button></form>
+          <form method="post" action="?"><input type="hidden" name="csrf" value="bef2edb65751aeb4e6680b18dfe3d61af8365e80131819c7ed2ab57b355da903"><input type="hidden" name="do" value="move"><input type="hidden" name="id" value="m26"><input type="hidden" name="dir" value="down"><button class="btn line sm" type="submit" aria-label="(有)石垣プラントを下へ" disabled>▼</button></form>
+          <a class="btn sm" href="p03.html">修正</a>
+          <a class="btn line sm" href="p06.html">削除</a>
+        </div>
+      </td>
+    </tr>
+      </tbody>
+</table>
+</div>
+
+<div class="card" style="margin-top:24px">
+  <h2>名簿の基準日</h2>
+  <form method="post" action="?" class="inline">
+    <input type="hidden" name="csrf" value="bef2edb65751aeb4e6680b18dfe3d61af8365e80131819c7ed2ab57b355da903"><input type="hidden" name="do" value="asof">
+    <div><label for="asOf">公開ページに「（○○現在）」と表示される年月</label><input type="text" id="asOf" name="asOf" value="令和8年6月" maxlength="20" placeholder="例：令和8年6月"></div>
+    <button class="btn" type="submit">基準日を更新</button>
+  </form>
+  <p class="hint">空欄にすると、公開ページの「（○○現在）」の表示が消えます。</p>
+</div>
+</main>
+
+<div style="position:sticky;bottom:0;z-index:50;background:#fff7e0;border-top:2px solid #d9a400;color:#5a4300;font:13px/1.6 'Noto Sans JP',Meiryo,sans-serif;padding:8px 16px;text-align:center">見本の画面です。入力や保存をしても実際の名簿・予定・資料・書き込みは変わりません。</div>
+<script>
+(() => {
+  const NEXT = {"login":"p02","setup":"p02","save":"p02","profile":"p05","delete":"p02","move":"p02","asof":"p02","logout":"p01","password":"p02","news_save":"p12","news_delete":"p12","union_save":"p14"};
+  // ▲▼は、本物と同じようにその場で入れ替えて見せる
+  const refresh = box => {
+    const items = [...box.parentElement.querySelectorAll(":scope > ." + box.classList[0])].filter(x => x.querySelector('button[name="mv"]'));
+    items.forEach((x, i) => {
+      x.querySelector('button[value$="up"]').disabled = i === 0;
+      x.querySelector('button[value$="down"]').disabled = i === items.length - 1;
+    });
+  };
+  const notice = text => {
+    let m = document.getElementById("demo-msg");
+    if (!m) { m = document.createElement("div"); m.id = "demo-msg"; m.className = "msg"; m.setAttribute("role", "status"); document.querySelector("main").prepend(m); }
+    m.textContent = text;
+    m.scrollIntoView({ block: "center" });
+  };
+  document.addEventListener("submit", e => {
+    e.preventDefault();
+    const sb = e.submitter;
+    if (sb && sb.name === "mv") {
+      const box = sb.closest(".pphoto, .prow");
+      const up = sb.value.endsWith("up");
+      const other = up ? box.previousElementSibling : box.nextElementSibling;
+      if (other && other.classList.contains(box.classList[0]) && other.querySelector('button[name="mv"]')) {
+        up ? box.parentElement.insertBefore(box, other) : box.parentElement.insertBefore(other, box);
+        refresh(box); notice("並び順を変えました。（入力中の内容も保存しました）");
+      }
+      return;
+    }
+    const d = e.target.querySelector('[name="do"]');
+    const to = d && NEXT[d.value];
+    if (to === "stay") { notice("見本のため、書き込みは保存されません。実際は、ここに会社名つきで表示されます。"); return; }
+    if (to) location.href = to + ".html";
+  });
+  document.addEventListener("click", e => { const a = e.target.closest('a[href="#"]'); if (a) e.preventDefault(); });
+})();
+</script>
+</body>
+</html>
